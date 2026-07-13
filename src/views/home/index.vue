@@ -9,20 +9,22 @@
         
         <!--Tile 1:Register Delivery-->
         <router-link to="/register_delivery" class="tile-card">
-          <div class="tile-icon-container">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="12" y1="18" x2="12" y2="12"></line>
-              <line x1="9" y1="15" x2="15" y2="15"></line>
-            </svg>
+          <div class="tile-top">
+            <div class="tile-icon-container">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+              </svg>
+            </div>
           </div>
           <div class="tile-label">Register Delivery</div>
         </router-link>
 
         <!--Tile 2:Goods to Scan-->
         <router-link to="/goods_to_scan" class="tile-card">
-          <div class="tile-meta">
+          <div class="tile-top">
             <div class="tile-icon-container">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round">
                 <!--Barcode Vertical Slats(Varied Widths and Offsets)-->
@@ -32,7 +34,7 @@
               </svg>
             </div>
             <!-- Computes unreceived warehouse product rows remaining -->
-            <div class="badge-count-wrapper">
+            <div class="badge-count-wrapper" aria-label="Pending items">
               <span class="badge-number">{{ pendingScanCount }}</span>
               <span class="badge-text">PEND.</span>
             </div>
@@ -42,7 +44,7 @@
 
         <!--Tile 3:Scanned Goods-->
         <router-link to="/scanned_goods" class="tile-card">
-          <div class="tile-meta">
+          <div class="tile-top">
             <div class="tile-icon-container">
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -52,7 +54,7 @@
               </svg>
             </div>
             <!-- Computes local active queue counts ready to submit to server -->
-            <div class="badge-count-wrapper">
+            <div class="badge-count-wrapper" aria-label="Pending items">
               <span class="badge-number">{{ capturedGoodsCount }}</span>
               <span class="badge-text">PEND.</span>
             </div>
@@ -62,34 +64,40 @@
 
         <!--Tile 4:System Server Engine Settings Profile Configuration-->
         <router-link to="/config" class="tile-card">
-          <div class="tile-icon-container">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
+          <div class="tile-top">
+            <div class="tile-icon-container">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1-2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </div>
           </div>
           <div class="tile-label">Configuration</div>
         </router-link>
 
         <!--Tile 5:About Screen Link-->
         <router-link to="/about" class="tile-card">
-          <div class="tile-icon-container">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="16" x2="12" y2="12"></line>
-              <line x1="12" y1="8" x2="12.01" y2="8"></line>
-            </svg>
+          <div class="tile-top">
+            <div class="tile-icon-container">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
           </div>
           <div class="tile-label">About</div>
         </router-link>
 
         <!--Tile 6:Lock Application System Hook-->
         <div class="tile-card interactive-action lock-tile" @click="handleLock">
-          <div class="tile-icon-container">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+          <div class="tile-top">
+            <div class="tile-icon-container">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
           </div>
           <div class="tile-label">Lock</div>
         </div>
@@ -184,80 +192,126 @@ const capturedGoodsCount = computed(() => {
 }
 
 .tile-card {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 1rem;
-  aspect-ratio: 1 / 1;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbfc 100%);
+  border: 1px solid rgba(209, 213, 219, 0.95);
+  border-radius: 10px;
+  padding: 0.85rem;
+  aspect-ratio: 1 / 0.88;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   box-sizing: border-box;
   font-family: monospace;
+  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03), 0 8px 18px rgba(17, 24, 39, 0.04);
 }
 
 .interactive-action {
   cursor: pointer;
 }
 
-.tile-meta {
+.tile-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+  min-height: 2rem;
+  gap: 0.5rem;
 }
 
-.tile-icon-container, .header-home-btn {
+.tile-icon-container,
+.header-home-btn {
   color: var(--accent-color);
+  flex: 0 0 auto;
 }
 
 .tile-label {
-  font-size: 0.85rem;
-  line-height: 1.2;
+  font-size: 0.8rem;
+  line-height: 1.15;
   color: var(--text-main);
+  letter-spacing: 0.01em;
 }
 
 .badge-count-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  line-height: 0.8;
+  justify-content: flex-start;
+  line-height: 1;
+  margin-left: auto;
+  padding: 0.05rem 0 0 0.35rem;
+  min-width: 2.35rem;
+  text-align: right;
 }
 
 .badge-number {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: normal;
   color: var(--text-main);
+  line-height: 0.9;
 }
 
 .badge-text {
   font-size: 0.6rem;
   letter-spacing: 0.5px;
   color: var(--text-muted);
+  margin-top: 0.08rem;
 }
 
 @media (max-width: 420px) {
+  .content-workspace {
+    padding: 0.6rem;
+  }
+
   .dashboard-grid {
     gap: 0.5rem;
   }
 
   .tile-card {
-    padding: 0.7rem;
-    border-radius: 5px;
+    padding: 0.6rem;
+    border-radius: 8px;
+    aspect-ratio: 1 / 0.78;
+  }
+
+  .tile-top {
+    min-height: 2.25rem;
+    gap: 0.4rem;
   }
 
   .tile-icon-container svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  .tile-label {
-    font-size: 0.75rem;
+    width: 18px;
+    height: 18px;
   }
 
   .badge-number {
-    font-size: 1.7rem;
+    font-size: 1.4rem;
+  }
+
+  .badge-text {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .content-workspace {
+    padding: 0.5rem;
+  }
+
+  .tile-card {
+    padding: 0.5rem;
+    aspect-ratio: 1 / 0.7;
+  }
+
+  .tile-top {
+    min-height: 2rem;
+  }
+
+  .tile-label {
+    font-size: 0.6rem;
+  }
+
+  .badge-number {
+    font-size: 1.2rem;
   }
 }
 </style>
