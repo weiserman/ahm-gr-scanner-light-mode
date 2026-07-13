@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { store } from '../util/store.js';
+import { hasConfiguredUser, store } from '../util/store.js';
+import Enroll from '../views/enroll/index.vue';
 import PinSetup from '../views/pinsetup/index.vue';
 import PinEnter from '../views/pinenter/index.vue';
 import Home from '../views/home/index.vue';
@@ -14,6 +15,7 @@ import Config from '../views/config/index.vue';
 
 const routes = [
   { path: '/', redirect: '/home' },
+  { name: 'enroll', path: '/enroll', component: Enroll },
   { name: 'setup', path: '/setup', component: PinSetup },
   { name: 'enter', path: '/enter', component: PinEnter },
   { name: 'home', path: '/home', component: Home },
@@ -34,8 +36,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const userConfigured = hasConfiguredUser();
   const pinExists = store.appPin !== null && store.appPin !== undefined && store.appPin !== '';
   const isLoggedIn = store.user.isLoggedIn === true;
+
+  if (!userConfigured) {
+    if (to.path !== '/enroll') return next('/enroll');
+    return next();
+  }
 
   if (!pinExists) {
     if (to.path !== '/setup') return next('/setup');
@@ -47,7 +55,7 @@ router.beforeEach((to, from, next) => {
     return next();
   }
 
-  if (to.path === '/setup' || to.path === '/enter') {
+  if (to.path === '/enroll' || to.path === '/setup' || to.path === '/enter') {
     return next('/home');
   }
 
@@ -55,4 +63,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-
