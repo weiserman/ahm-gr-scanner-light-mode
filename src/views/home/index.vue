@@ -236,5 +236,28 @@ const capturedGoodsCount = computed(() => {
   letter-spacing: 0.5px;
   color: var(--text-muted);
 }
-</style>
 
+@media (max-width: 420px) {
+  .dashboard-grid {
+    gap: 0.5rem;
+  }
+
+  .tile-card {
+    padding: 0.7rem;
+    border-radius: 5px;
+  }
+
+  .tile-icon-container svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tile-label {
+    font-size: 0.75rem;
+  }
+
+  .badge-number {
+    font-size: 1.7rem;
+  }
+}
+</style>
