@@ -59,7 +59,7 @@
               <span class="badge-text">PEND.</span>
             </div>
           </div>
-          <div class="tile-label">Scanned Goods 1</div>
+          <div class="tile-label">Scanned Goods</div>
         </router-link>
 
         <!--Tile 4:System Server Engine Settings Profile Configuration-->
@@ -75,21 +75,7 @@
           <div class="tile-label">Configuration</div>
         </router-link>
 
-        <!--Tile 5:About Screen Link-->
-        <router-link to="/about" class="tile-card">
-          <div class="tile-top">
-            <div class="tile-icon-container">
-              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-            </div>
-          </div>
-          <div class="tile-label">About</div>
-        </router-link>
-
-        <!--Tile 6:Lock Application System Hook-->
+        <!--Tile 5:Lock Application System Hook-->
         <div class="tile-card interactive-action lock-tile" @click="handleLock">
           <div class="tile-top">
             <div class="tile-icon-container">
