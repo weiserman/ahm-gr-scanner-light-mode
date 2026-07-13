@@ -518,7 +518,7 @@ onUnmounted(() => {
 /* Custom segmented controls styling tracks */
 .binary-switch {
   display: flex;
-  background-color: #121214;
+  background-color: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: 6px;
   overflow: hidden;
@@ -540,13 +540,13 @@ onUnmounted(() => {
 
 /* Toggle option highlight background states */
 .switch-btn.segment-no.active {
-  background-color: #00e676; /* Standard layout neon active state green color token */
-  color: #121214;
+  background-color: var(--accent-color); /* Standard layout neon active state green color token */
+  color: var(--text-main);
 }
 
 .switch-btn.segment-yes.active {
-  background-color: #00e676;
-  color: #121214;
+  background-color: var(--accent-color);
+  color: var(--text-main);
 }
 
 /* Footer Action Buttons Section Layout */
@@ -582,8 +582,8 @@ onUnmounted(() => {
 
 /* Green Bright Save Action Button */
 .action-btn-save {
-  background-color: #00e676;
-  color: #121214;
+  background-color: var(--accent-color);
+  color: var(--text-main);
   border: none;
   border-radius: 6px;
   padding: 0.9rem 0;
@@ -594,7 +594,7 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.15);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
 }
 
 .action-btn-save:active {

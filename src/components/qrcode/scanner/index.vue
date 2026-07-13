@@ -402,10 +402,10 @@ const handleCancel = async () => {
   position: absolute;
   width: 90%;
   height: 2px;
-  background-color: #00e676;
+  background-color: var(--accent-color);
   top: 50%;
   left: 5%;
-  box-shadow: 0 0 8px #00e676;
+  box-shadow: 0 0 8px rgba(22, 163, 74, 0.35);
 }
 
 .guide-text {
@@ -455,15 +455,15 @@ const handleCancel = async () => {
 .scanner-page {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background-color: #0f172a; color: #ffffff;
+  background-color: var(--bg-color); color: var(--text-main);
   display: flex; flex-direction: column; z-index: 9999;
 }
 .scanner-header {
-  height: 56px; background-color: #1e293b;
+  height: 56px; background-color: var(--surface-color);
   display: flex; align-items: center; padding: 0 1rem; gap: 1rem;
 }
 .back-btn {
-  background: transparent; border: none; color: #ffffff; font-size: 1rem; cursor: pointer;
+  background: transparent; border: none; color: var(--text-main); font-size: 1rem; cursor: pointer;
 }
 .scanner-body {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; gap: 1.5rem;
@@ -472,7 +472,7 @@ const handleCancel = async () => {
 /* Ensure the library injection respects our maximum responsive wrapper limits */
 #qr-code-region {
   width: 100%; max-width: 400px; border-radius: 12px; overflow: hidden;
-  background-color: #1e293b; border: 2px solid #334155;
+  background-color: var(--surface-color); border: 2px solid var(--border-color);
 }
 
 /* Deeper element targeting overrides for code injected directly by html5-qrcode */

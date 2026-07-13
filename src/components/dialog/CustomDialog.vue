@@ -76,7 +76,7 @@ const handleBackdropClick = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.75); /* Darker backdrop to emphasize your dark theme dashboard */
+  background-color: rgba(17, 24, 39, 0.18); /* Softened backdrop to keep the light theme focused */
   backdrop-filter: blur(2px); /* Soft focus effect for modern mobile layouts */
   display: flex;
   align-items: center;
@@ -89,12 +89,12 @@ const handleBackdropClick = () => {
 
 /* 2. Responsive Card Layout matching your terminal theme */
 .custom-dialog-card {
-  background: #111111; /* True dark background */
-  border: 1px solid #333333; /* Subdued frame borders */
+  background: var(--surface-color); /* Clean light surface background */
+  border: 1px solid var(--border-color); /* Subdued frame borders */
   padding: 24px;
   width: 100%;
   max-width: 400px; /* Fluid boundary on mobile screens */
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.7), 0px 0px 0px 1px #222;
+  box-shadow: 0px 10px 30px rgba(17, 24, 39, 0.12);
   text-align: left;
   box-sizing: border-box;
 }
@@ -105,19 +105,19 @@ const handleBackdropClick = () => {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-bottom: 1px solid #222222;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 8px;
   font-weight: bold;
 }
 /* Color-coded alert categories matching tech dashboards */
-.custom-dialog-title.alert { color: #888888; }
+.custom-dialog-title.alert { color: var(--text-muted); }
 .custom-dialog-title.confirm { color: #4ade80; } /* Matrix/Terminal green indicator */
 .custom-dialog-title.prompt { color: #60a5fa; }
 
 /* 4. Readable monospace body message text */
 .custom-dialog-message {
   font-size: 14px;
-  color: #cccccc; /* Off-white for reduced eye-strain */
+  color: var(--text-main); /* Off-white for reduced eye-strain */
   margin: 0 0 24px 0;
   white-space: pre-wrap;
   line-height: 1.5;
@@ -133,13 +133,13 @@ const handleBackdropClick = () => {
   font-family: monospace;
   font-size: 14px;
   padding: 12px; /* Large touch target */
-  background: #1a1a1a;
-  color: #ffffff;
-  border: 1px solid #444444;
+  background: var(--bg-color);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
   outline: none;
 }
 .custom-dialog-input:focus {
-  border-color: #4ade80; /* Changes border to dashboard green on focus */
+  border-color: var(--accent-color); /* Changes border to dashboard green on focus */
 }
 
 /* 6. Optimized Mobile Touch Controls */
@@ -155,8 +155,8 @@ const handleBackdropClick = () => {
 /* 7. Action Button Overhaul */
 .btn-primary, .btn-secondary {
   background: none;
-  border: 1px solid #444444;
-  color: #cccccc;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   padding: 14px 16px; /* Generous padding padding matches mobile touch standards (min 44px height) */
   font-family: monospace;
   font-size: 13px;
@@ -169,19 +169,19 @@ const handleBackdropClick = () => {
 
 /* Subtle highlighting styling for primaries */
 .btn-primary {
-  background: #222222;
-  border-color: #555555;
-  color: #ffffff;
+  background: var(--bg-color);
+  border-color: var(--border-color);
+  color: var(--text-main);
 }
 .btn-primary:active {
-  background: #4ade80; /* Touch feedback flashes green on click/tap */
-  color: #000000;
-  border-color: #4ade80;
+  background: rgba(22, 163, 74, 0.12); /* Touch feedback flashes green on click/tap */
+  color: var(--accent-color);
+  border-color: var(--accent-color);
 }
 
 .btn-secondary:active {
-  background: #222222;
-  color: #ffffff;
+  background: var(--bg-color);
+  color: var(--text-main);
 }
 
 /* Tailwind-style fallback responsive block tweak for very narrow viewports (<340px) */

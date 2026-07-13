@@ -124,8 +124,8 @@ const selectDelivery = (delivery) => {
 }
 
 .delivery-card {
-  background-color: var(--surface-color, #1a1a1e);
-  border: 1px solid var(--border-color, #2c2c35);
+  background-color: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #d1d5db);
   border-radius: 8px;
   padding: 1.25rem 1rem;
   display: flex;
@@ -137,7 +137,7 @@ const selectDelivery = (delivery) => {
 }
 
 .delivery-card:active {
-  background-color: var(--border-color, #2c2c35);
+  background-color: var(--border-color, #d1d5db);
   transform: scale(0.99);
 }
 
@@ -164,19 +164,19 @@ const selectDelivery = (delivery) => {
 .delivery-number {
   font-size: 1.15rem;
   font-weight: bold;
-  color: var(--text-main, #f4f4f7);
+  color: var(--text-main, #111827);
   margin: 0 0 0.15rem 0;
   font-family: system-ui, -apple-system, sans-serif;
 }
 
 .meta-row {
   font-size: 0.85rem;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
   font-family: monospace;
 }
 
 .meta-value {
-  color: var(--text-main, #f4f4f7);
+  color: var(--text-main, #111827);
 }
 
 .card-right {
@@ -190,13 +190,13 @@ const selectDelivery = (delivery) => {
 
 .status-label {
   font-size: 0.75rem;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
 }
 
 .date-stamp {
   font-size: 0.85rem;
   font-weight: 500;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
   font-family: monospace;
 }
 
@@ -216,7 +216,7 @@ const selectDelivery = (delivery) => {
 }
 
 .status-badge.completed {
-  background-color: rgba(66, 184, 131, 0.15);
+  background-color: rgba(22, 163, 74, 0.12);
   color: var(--accent-color);
 }
 

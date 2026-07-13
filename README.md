@@ -5,10 +5,10 @@ A lightweight mobile asset for [Android Hybrid Mobile](https://github.com/otvnvs
 
 ![Download Link](/qr.png)
 
-[Launch in Asset Delivery Scanner](https://otvnvs.github.io/ahm-asset-delivery-scanner/)
+[Launch in Asset Delivery Scanner](https://weiserman.github.io/ahm-gr-scanner-light-mode/)
 
 
-**Direct Install Link:** [ahm-app://deploy?package_url=ahm-app://deploy?package_url=https://github.com/otvnvs/ahm-asset-delivery-scanner/archive/refs/heads/main.zip](ahm-app://deploy?package_url=https://github.com/otvnvs/ahm-asset-delivery-scanner/archive/refs/heads/main.zip)
+**Direct Install Link:** [Install in AHM App](ahm-app://deploy?package_url=https://github.com/weiserman/ahm-gr-scanner-light-mode/archive/refs/heads/main.zip)
 
 ## Features
 
@@ -63,4 +63,3 @@ With the dependencies installed you can use the following to run and build the p
 
 ### Production Package
 Ensure the output bundle is zipped and hosted on GitHub Releases or a accessible repository link for the [Android Hybrid Mobile](https://github.com/otvnvs/android-hybrid-mobile) app to pull down, unzip, and render natively. Simply enter the repository zip download link (`https://github.com/otvnvs/ahm-asset-odata-client/archive/refs/heads/main.zip`) in the maintenance screen and hit update.
-
