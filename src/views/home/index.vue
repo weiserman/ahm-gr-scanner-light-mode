@@ -173,6 +173,7 @@ const capturedGoodsCount = computed(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
+  margin-top: 0.55rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -251,6 +252,7 @@ const capturedGoodsCount = computed(() => {
 
   .dashboard-grid {
     gap: 0.5rem;
+    margin-top: 0.45rem;
   }
 
   .tile-card {
@@ -281,6 +283,10 @@ const capturedGoodsCount = computed(() => {
 @media (max-width: 360px) {
   .content-workspace {
     padding: 0.5rem;
+  }
+
+  .dashboard-grid {
+    margin-top: 0.4rem;
   }
 
   .tile-card {
