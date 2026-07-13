@@ -76,7 +76,7 @@ const handleBackdropClick = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(17, 24, 39, 0.18); /* Darker backdrop to emphasize your dark theme dashboard */
+  background-color: rgba(17, 24, 39, 0.18); /* Softened backdrop to keep the light theme focused */
   backdrop-filter: blur(2px); /* Soft focus effect for modern mobile layouts */
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@ const handleBackdropClick = () => {
 
 /* 2. Responsive Card Layout matching your terminal theme */
 .custom-dialog-card {
-  background: var(--surface-color); /* True dark background */
+  background: var(--surface-color); /* Clean light surface background */
   border: 1px solid var(--border-color); /* Subdued frame borders */
   padding: 24px;
   width: 100%;
