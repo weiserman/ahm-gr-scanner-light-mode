@@ -224,6 +224,12 @@ if (!window.__GLOBAL_APP_STORE__) {
 
 export const store = window.__GLOBAL_APP_STORE__;
 
+export const hasConfiguredUser = () => {
+  const username = typeof store.config.username === 'string' ? store.config.username.trim() : '';
+  const password = typeof store.config.password === 'string' ? store.config.password.trim() : '';
+  return username.length > 0 && password.length > 0;
+};
+
 export const storeActions = {
   saveNewPin(pin) {
     store.appPin = String(pin);
