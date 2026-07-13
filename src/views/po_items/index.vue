@@ -143,7 +143,7 @@ const selectItem = (item) => {
 }
 
 .search-input::placeholder {
-  color: #4b5563;
+  color: var(--text-muted);
 }
 
 /* Master list flow wrapper framework stack alignment */
@@ -206,7 +206,7 @@ const selectItem = (item) => {
 }
 
 .exception-alert-tag {
-  color: #ef4444;
+  color: var(--danger-color);
   font-weight: bold;
 }
 
@@ -220,4 +220,3 @@ const selectItem = (item) => {
   color: var(--text-muted);
 }
 </style>
-

@@ -33,7 +33,7 @@
           <div class="card-left">
             <div class="package-icon-wrapper">
               <!-- Inline high-contrast dynamic shipping container vector asset -->
-              <svg viewBox="0 0 24 24" width="32" height="32" stroke="#d97706" stroke-width="1.5" fill="#f59e0b">
+              <svg viewBox="0 0 24 24" width="32" height="32" stroke="var(--accent-color-strong)" stroke-width="1.5" fill="rgba(var(--accent-rgb), 0.2)">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
                 <path d="M2 17l10 5 10-5M2 12l10 5 10-5" fill="none" />
                 <path d="M2 7v10l10 5V12L2 7z" opacity="0.15" />
@@ -211,12 +211,12 @@ const selectDelivery = (delivery) => {
 }
 
 .status-badge.pend {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background-color: rgba(var(--warning-rgb), 0.16);
+  color: var(--warning-color);
 }
 
 .status-badge.completed {
-  background-color: rgba(22, 163, 74, 0.12);
+  background-color: rgba(var(--accent-rgb), 0.12);
   color: var(--accent-color);
 }
 
@@ -249,4 +249,3 @@ const selectDelivery = (delivery) => {
   text-decoration: underline;
 }
 </style>
-

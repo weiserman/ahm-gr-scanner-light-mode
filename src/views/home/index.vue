@@ -175,7 +175,7 @@ const capturedGoodsCount = computed(() => {
 }
 
 .header-title {
-  font-family: monospace;
+  font-family: "72", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 1.2rem;
   margin: 0;
   color: var(--text-main);
@@ -192,9 +192,9 @@ const capturedGoodsCount = computed(() => {
 }
 
 .tile-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfbfc 100%);
-  border: 1px solid rgba(209, 213, 219, 0.95);
-  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--surface-alt) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   padding: 0.85rem;
   aspect-ratio: 1 / 0.88;
   display: flex;
@@ -202,8 +202,8 @@ const capturedGoodsCount = computed(() => {
   justify-content: space-between;
   align-items: flex-start;
   box-sizing: border-box;
-  font-family: monospace;
-  box-shadow: 0 1px 0 rgba(17, 24, 39, 0.03), 0 8px 18px rgba(17, 24, 39, 0.04);
+  font-family: "72", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-shadow: 0 1px 2px rgba(29, 45, 62, 0.06), 0 6px 14px rgba(29, 45, 62, 0.08);
 }
 
 .interactive-action {
@@ -221,7 +221,7 @@ const capturedGoodsCount = computed(() => {
 
 .tile-icon-container,
 .header-home-btn {
-  color: var(--accent-color);
+  color: var(--accent-color-strong);
   flex: 0 0 auto;
 }
 

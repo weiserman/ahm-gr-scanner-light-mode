@@ -174,7 +174,7 @@ const handleSubmit = async () => {
 }
 
 .required-indicator {
-  color: #ef4444; 
+  color: var(--danger-color);
   margin-left: 0.15rem;
 }
 
@@ -226,7 +226,7 @@ const handleSubmit = async () => {
 }
 
 .form-input::placeholder {
-  color: #4b5563; 
+  color: var(--text-muted);
   opacity: 1;
 }
 
@@ -241,14 +241,14 @@ const handleSubmit = async () => {
 }
 
 .status-banner.failed {
-  background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
+  background-color: rgba(var(--danger-rgb), 0.08);
+  border: 1px solid rgba(var(--danger-rgb), 0.32);
+  color: var(--danger-color);
 }
 
 .receipt-submit-btn {
   background-color: var(--accent-color); 
-  color: var(--text-main); 
+  color: var(--accent-contrast);
   border: none;
   border-radius: 6px;
   padding: 0.9rem;
@@ -262,7 +262,7 @@ const handleSubmit = async () => {
   width: 100%;
   margin-top: 1rem;
   box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+  box-shadow: var(--accent-shadow);
   transition: opacity 0.15s ease;
 }
 
@@ -295,4 +295,3 @@ const handleSubmit = async () => {
   to { transform: rotate(360deg); }
 }
 </style>
-
