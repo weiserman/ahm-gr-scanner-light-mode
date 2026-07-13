@@ -158,7 +158,7 @@ const handleUpdate = () => {
 .form-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
   text-align: left;
 }
 
@@ -168,9 +168,9 @@ const handleUpdate = () => {
 
 .form-input {
   width: 100%;
-  background-color: var(--surface-color, #1a1a1e);
-  border: 1px solid var(--border-color, #2c2c35);
-  color: var(--text-main, #f4f4f7);
+  background-color: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #d1d5db);
+  color: var(--text-main, #111827);
   border-radius: 6px;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
@@ -181,7 +181,7 @@ const handleUpdate = () => {
 }
 
 .read-only-input {
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
   cursor: not-allowed;
 }
 
@@ -191,12 +191,12 @@ const handleUpdate = () => {
 }
 
 .numeric-input:focus {
-  border-color: var(--accent-color, #42b883);
+  border-color: var(--accent-color, #16a34a);
 }
 
 .update-submit-btn {
-  background-color: #00e676; 
-  color: #121214; 
+  background-color: var(--accent-color); 
+  color: var(--text-main); 
   border: none;
   border-radius: 6px;
   padding: 0.9rem;
@@ -210,7 +210,7 @@ const handleUpdate = () => {
   width: 100%;
   margin-top: 1rem;
   box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.15);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
   transition: opacity 0.1s ease;
 }
 

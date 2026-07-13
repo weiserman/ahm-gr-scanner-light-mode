@@ -527,7 +527,7 @@ const handleSaveConfig = () => {
 .form-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted, #6b7280);
   text-align: left;
 }
 .input-container {
@@ -555,8 +555,8 @@ const handleSaveConfig = () => {
   line-height: 1.3;
 }
 .status-banner.success {
-  background-color: rgba(66, 184, 131, 0.1);
-  border: 1px solid rgba(66, 184, 131, 0.3);
+  background-color: rgba(22, 163, 74, 0.1);
+  border: 1px solid rgba(22, 163, 74, 0.3);
   color: var(--accent-color);
 }
 .status-banner.failed {
@@ -584,8 +584,8 @@ const handleSaveConfig = () => {
   background-color: var(--border-color);
 }
 .save-config-btn {
-  background-color: #00e676;
-  color: #121214;
+  background-color: var(--accent-color);
+  color: var(--text-main);
   border: none;
   border-radius: 6px;
   padding: 0.9rem;
@@ -598,13 +598,13 @@ const handleSaveConfig = () => {
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(0, 230, 118, 0.15);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
 }
 
 .connectivity-test-btn{
   background-color: transparent;
-  border: 1px solid var(--accent-color, #00e676);
-  color: var(--accent-color, #00e676);
+  border: 1px solid var(--accent-color, #16a34a);
+  color: var(--accent-color, #16a34a);
   font-size: 0.95rem;
   font-weight: bold;
   padding: 0.85rem;
@@ -621,13 +621,13 @@ const handleSaveConfig = () => {
 }
 
 .connectivity-test-btn:active {
-  background-color: rgba(0, 230, 118, 0.1);
+  background-color: rgba(22, 163, 74, 0.12);
 }
 
 .share-qr-btn {
   background-color: transparent;
-  border: 1px solid var(--accent-color, #00e676);
-  color: var(--accent-color, #00e676);
+  border: 1px solid var(--accent-color, #16a34a);
+  color: var(--accent-color, #16a34a);
   font-size: 0.95rem;
   font-weight: bold;
   padding: 0.85rem;
@@ -642,7 +642,7 @@ const handleSaveConfig = () => {
   margin-top: 0.5rem;
 }
 .share-qr-btn:active {
-  background-color: rgba(0, 230, 118, 0.1);
+  background-color: rgba(22, 163, 74, 0.12);
 }
 
 /* Full-Screen Semi-Transparent Overlay */
@@ -652,7 +652,7 @@ const handleSaveConfig = () => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(17, 24, 39, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -664,8 +664,8 @@ const handleSaveConfig = () => {
 
 /* Centered Layout Card with Minor Padding */
 .qr-modal-card {
-  background-color: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
   padding: 1.5rem;
   border-radius: 12px;
   display: flex;
@@ -674,7 +674,7 @@ const handleSaveConfig = () => {
   gap: 1rem;
   max-width: 320px;
   width: 100%;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 25px -5px rgba(17, 24, 39, 0.12);
   box-sizing: border-box;
 }
 
@@ -686,14 +686,14 @@ const handleSaveConfig = () => {
 .qr-caption {
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-main);
   margin: 0;
   text-align: center;
 }
 
 .qr-sub-caption {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   margin: 0;
   text-align: center;
 }

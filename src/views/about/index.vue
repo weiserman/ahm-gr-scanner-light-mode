@@ -202,7 +202,7 @@ import MenuTop from '../../components/menutop/index.vue';
 
 /* Status state diagnostic visualization label indicators */
 .status-online {
-  color: #00e676; /* Vibrant validation diagnostic active state green color */
+  color: var(--accent-color); /* Vibrant validation diagnostic active state green color */
   font-weight: bold;
   font-family: monospace;
   letter-spacing: 0.5px;
