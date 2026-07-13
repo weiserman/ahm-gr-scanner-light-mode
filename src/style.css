@@ -1,106 +1,135 @@
 :root {
-  --bg-color: #f5f5f7;
+  --bg-color: #f5f7f9;
   --surface-color: #ffffff;
-  --border-color: #d1d5db;
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --accent-color: #16a34a;
+  --surface-alt: #eef1f4;
+  --border-color: #d9dfe7;
+  --text-main: #1d2d3e;
+  --text-muted: #556b82;
+  --accent-color: #0a6ed1;
+  --accent-color-strong: #0854a0;
+  --accent-contrast: #ffffff;
+  --accent-rgb: 10, 110, 209;
+  --accent-shadow: 0 6px 14px rgba(10, 110, 209, 0.22);
+  --warning-color: #e9730c;
+  --warning-rgb: 233, 115, 12;
+  --danger-color: #bb0000;
+  --danger-rgb: 187, 0, 0;
+  --focus-ring: 0 0 0 2px rgba(10, 110, 209, 0.2);
   --header-height: 56px;
 }
 
-/* Master Reset: Lock out horizontal page shifting completely */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
   color: var(--text-main);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: "72", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Base Layout Core: Enforce rigid Dynamic Viewport Height to prevent toolbar overflow scrolling */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 .app-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  height: 100dvh; /* Adapts instantly to folding/unfolding mobile browser UI bars */
+  height: 100dvh;
   width: 100%;
-  overflow: hidden; /* Hard cap prevents global viewport dragging */
-  box-sizing: border-box;
+  overflow: hidden;
+  overscroll-behavior: none !important;
 }
 
-/* Rigid Fixed Top Header Layout */
 .app-header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--header-height);
+  height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem;
+  align-items: flex-end;
+  padding: env(safe-area-inset-top, 0px) 1rem 0.75rem;
   background-color: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
   z-index: 1000;
-  box-sizing: border-box;
 }
 
 .app-header h1 {
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   margin: 0;
 }
 
-/* Main Screen Scroll Area Container Workspace Framework */
 .app-content {
   flex: 1;
   width: 100%;
-  margin-top: var(--header-height); /* Defends content against slipping beneath the header */
+  margin-top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
   padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  box-sizing: border-box;
-  overflow-y: auto; /* Restricts scrolling purely to the main inside track area */
-  -webkit-overflow-scrolling: touch; /* Butter-smooth momentum swipe scrolling on iOS devices */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: none !important;
 }
 
-/* Clean Badge Utility Styling Component */
 .badge {
-  background-color: rgba(22, 163, 74, 0.12);
+  background-color: rgba(var(--accent-rgb), 0.1);
   color: var(--accent-color);
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
-/* Desktop Presentation Scaling Rules Override */
-@media (min-width: 768px) {
-  .app-header h1 {
-    font-size: 1.5rem;
-  }
-  .app-content {
-    padding: 2rem;
-  }
+button,
+.receipt-submit-btn,
+.action-btn-save,
+.action-btn-save-server {
+  min-height: 44px;
 }
 
-/* Interactive Navigation Link Normalizer */
-a, a:link, a:visited, a:hover, a:active {
+input,
+select,
+textarea,
+.form-input,
+.search-input {
+  border-radius: 0.5rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.form-input:focus,
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: var(--focus-ring);
+}
+
+a,
+a:link,
+a:visited,
+a:hover,
+a:active {
   color: inherit;
   text-decoration: none;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent; /* Kills ugly gray tap-flashing rectangles on smartphones */
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Fluid UI Container Component Block */
 .minimal-container {
   width: 100%;
-  box-sizing: border-box;
 }
 
 @media (max-width: 480px) {
@@ -115,30 +144,19 @@ a, a:link, a:visited, a:hover, a:active {
   }
 }
 
-
-/* Force hide scrollbar tracks across all modern mobile browser engines */
-.app-content, 
-.app-layout, 
-body, 
+.app-content,
+.app-layout,
+body,
 html {
-  -ms-overflow-style: none;  /* Internet Explorer / Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.app-content::-webkit-scrollbar, 
-.app-layout::-webkit-scrollbar, 
-body::-webkit-scrollbar, 
+.app-content::-webkit-scrollbar,
+.app-layout::-webkit-scrollbar,
+body::-webkit-scrollbar,
 html::-webkit-scrollbar {
-  display: none !important;  /* Chrome, Safari, Opera and Android WebViews */
+  display: none !important;
   width: 0 !important;
   height: 0 !important;
 }
-
-/* Extra safety lock: Prevent overscroll rubber-banding bounce logic on mobile */
-.app-layout {
-  overscroll-behavior: none !important;
-}
-.app-content {
-  overscroll-behavior-y: none !important;
-}
-

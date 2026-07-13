@@ -29,30 +29,29 @@ defineProps({
   top: 0;
   left: 0;
   width: 100%;
-  height: 56px;
+  height: calc(var(--header-height) + env(safe-area-inset-top, 0px));
   z-index: 100;
   box-sizing: border-box;
   background-color: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0 1.5rem;
+  align-items: flex-end;
+  padding: env(safe-area-inset-top, 0px) 1rem 0.75rem;
 }
 
 .header-title {
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: 1.25rem;
+  font-family: "72", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 1.05rem;
   margin: 0;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-main);
 }
 
 .header-home-btn {
-  color: var(--accent-color);
+  color: var(--accent-color-strong);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 </style>
-

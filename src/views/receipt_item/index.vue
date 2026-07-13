@@ -444,7 +444,7 @@ onUnmounted(() => {
   font-size: 1.35rem;
   font-weight: bold;
   font-family: monospace;
-  color: #555555; /* Neutral dark status default when 0 items exist */
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
@@ -541,12 +541,12 @@ onUnmounted(() => {
 /* Toggle option highlight background states */
 .switch-btn.segment-no.active {
   background-color: var(--accent-color); /* Standard layout neon active state green color token */
-  color: var(--text-main);
+  color: var(--accent-contrast);
 }
 
 .switch-btn.segment-yes.active {
   background-color: var(--accent-color);
-  color: var(--text-main);
+  color: var(--accent-contrast);
 }
 
 /* Footer Action Buttons Section Layout */
@@ -563,8 +563,8 @@ onUnmounted(() => {
 /* Red Clear Button */
 .action-btn-clear {
   background-color: transparent;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171; /* Accent red font tone */
+  border: 1px solid rgba(var(--danger-rgb), 0.35);
+  color: var(--danger-color);
   border-radius: 6px;
   padding: 0.9rem 0;
   font-size: 1rem;
@@ -577,13 +577,13 @@ onUnmounted(() => {
 }
 
 .action-btn-clear:active {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(var(--danger-rgb), 0.08);
 }
 
 /* Green Bright Save Action Button */
 .action-btn-save {
   background-color: var(--accent-color);
-  color: var(--text-main);
+  color: var(--accent-contrast);
   border: none;
   border-radius: 6px;
   padding: 0.9rem 0;
@@ -594,11 +594,10 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+  box-shadow: var(--accent-shadow);
 }
 
 .action-btn-save:active {
   opacity: 0.9;
 }
 </style>
-

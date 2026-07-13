@@ -39,8 +39,8 @@ function reloadPage() {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background-color: #0066cc;
-  color: #ffffff;
+  background-color: var(--accent-color);
+  color: var(--accent-contrast);
   border: none;
   
   /* Layout alignment */
@@ -50,15 +50,15 @@ function reloadPage() {
   
   /* Interactive styling mechanics */
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--accent-shadow);
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Hover effects */
 .floating-refresh-btn:hover {
-  background-color: #0052a3;
+  background-color: var(--accent-color-strong);
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 16px rgba(var(--accent-rgb), 0.34);
 }
 
 /* Active click states */
