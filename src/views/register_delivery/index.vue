@@ -25,40 +25,29 @@
             <input 
               type="text" 
               v-model="formData.deliveryNumber" 
-              placeholder="Enter a PO, STO, DC Delivery Number" 
+              placeholder="Enter or scan a PO, STO, or DC delivery number" 
               class="form-input"
               :disabled="isLoading"
               required
             />
           </div>
+          <p class="field-hint">You can type this in or scan the barcode with your phone camera.</p>
         </div>
 
-        <!--Field 3:SSCC Handling Code Field-->
+        <!--Field 3:Optional Delivery Reference Notes-->
         <div class="form-group">
-          <label class="form-label">SSCC</label>
-          <div class="input-container">
-            <input 
-              type="text" 
-              v-model="formData.sscc" 
-              placeholder="Enter SSCC number only" 
-              class="form-input"
-              :disabled="isLoading"
-            />
-          </div>
-        </div>
-
-        <!--Field 4:Optional Delivery Reference Notes-->
-        <div class="form-group">
-          <label class="form-label">Delivery reference</label>
+          <label class="form-label">Delivery reference<span class="required-indicator">*</span></label>
           <div class="input-container">
             <input 
               type="text" 
               v-model="formData.deliveryReference" 
-              placeholder="Required for vendor POs" 
+              placeholder="Enter or scan the delivery reference" 
               class="form-input"
               :disabled="isLoading"
+              required
             />
           </div>
+          <p class="field-hint">You can type this in or scan the barcode with your phone camera.</p>
         </div>
 
         <!-- Feedback Error Panel Banner -->
@@ -97,12 +86,11 @@ const errorMessage = ref(null);
 const formData = ref({
   storageLocation: '0001',
   deliveryNumber: '',
-  sscc: '',
   deliveryReference: ''
 });
 
 const handleSubmit = async () => {
-  if (!formData.value.deliveryNumber) return;
+  if (!formData.value.deliveryNumber || !formData.value.deliveryReference) return;
 
   isLoading.value = true;
   errorMessage.value = null;
@@ -176,6 +164,13 @@ const handleSubmit = async () => {
 .required-indicator {
   color: var(--danger-color);
   margin-left: 0.15rem;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+  line-height: 1.4;
 }
 
 .input-container {
