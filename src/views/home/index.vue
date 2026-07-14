@@ -8,7 +8,7 @@
       <div class="dashboard-grid">
         
         <!--Tile 1:Register Delivery-->
-        <router-link to="/register_delivery" class="tile-card">
+        <router-link to="/register_delivery" class="tile-card" @click.prevent="handleRegisterDeliveryClick">
           <div class="tile-top">
             <div class="tile-icon-container">
               <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none">
@@ -106,14 +106,32 @@ const handleLock = () => {
   router.push('/enter');
 };
 
+const activeDeliveryDoc = computed(() => {
+  const cachedData = store.cache.entityLists['ActiveDelivery'];
+  if (!cachedData) return null;
+  return Array.isArray(cachedData) ? cachedData[0] : cachedData;
+});
+
+const handleRegisterDeliveryClick = async () => {
+  const currentDoc = activeDeliveryDoc.value;
+  const currentPoNumber = currentDoc && currentDoc.deliveryNumber ? String(currentDoc.deliveryNumber).trim() : '';
+
+  if (currentPoNumber) {
+    const shouldDiscard = await window.confirm(`PO ${currentPoNumber} is being processed. Do you want to discard it?`);
+    if (!shouldDiscard) return;
+
+    storeActions.clearCapturedReceiptItems();
+    storeActions.clearActiveDeliveryCache();
+  }
+
+  router.push('/register_delivery');
+};
+
 /**
  * Accesses active item sets currently loaded within cache memory modules
  */
 const activeItems = computed(() => {
-  const cachedData = store.cache.entityLists['ActiveDelivery'];
-  if (!cachedData) return [];
-  const activeDoc = Array.isArray(cachedData) ? cachedData[0] : cachedData;
-  return activeDoc && activeDoc.items ? activeDoc.items : [];
+  return activeDeliveryDoc.value && activeDeliveryDoc.value.items ? activeDeliveryDoc.value.items : [];
 });
 
 /**
