@@ -2,7 +2,57 @@
   <header class="app-header fixed-topbar">
     <!-- Displays the dynamic prop text instead of a hardcoded string -->
     <h1 class="header-title">{{ title }}</h1>
-    <div v-if="normalizedMenuItems.length > 0" ref="headerMenuRef" class="header-menu">
+    <div v-if="useInlineMenu" class="header-inline-menu">
+      <router-link
+        v-for="item in normalizedMenuItems"
+        :key="item.to"
+        :to="item.to"
+        class="header-inline-menu-btn"
+        :aria-label="item.label"
+      >
+        <svg
+          v-if="menuIconType(item) === 'home'"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          stroke="currentColor"
+          stroke-width="2"
+          fill="none"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <svg
+          v-else-if="menuIconType(item) === 'scanned_goods'"
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          stroke="currentColor"
+          stroke-width="2"
+          fill="none"
+        >
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="9" y1="9" x2="15" y2="9"></line>
+          <line x1="9" y1="13" x2="15" y2="13"></line>
+          <line x1="9" y1="17" x2="15" y2="17"></line>
+        </svg>
+        <svg
+          v-else
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          stroke="currentColor"
+          stroke-width="2"
+          fill="none"
+        >
+          <circle cx="12" cy="12" r="9"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <circle cx="12" cy="16" r="1"></circle>
+        </svg>
+      </router-link>
+    </div>
+
+    <div v-else-if="normalizedMenuItems.length > 0" ref="headerMenuRef" class="header-menu">
       <button
         type="button"
         class="header-menu-btn"
@@ -66,6 +116,15 @@ const normalizedMenuItems = computed(() => {
   return props.menuItems.filter(item => item && item.to && item.label);
 });
 
+const useInlineMenu = computed(() => normalizedMenuItems.value.length > 0 && normalizedMenuItems.value.length <= 2);
+
+const menuIconType = (item) => {
+  if (item.icon) return item.icon;
+  if (item.to === '/home') return 'home';
+  if (item.to === '/scanned_goods') return 'scanned_goods';
+  return 'generic';
+};
+
 const closeMenu = () => {
   isMenuOpen.value = false;
 };
@@ -120,6 +179,21 @@ watch(() => route.fullPath, closeMenu);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.header-inline-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.header-inline-menu-btn {
+  color: var(--accent-color-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  text-decoration: none;
 }
 
 .header-menu {

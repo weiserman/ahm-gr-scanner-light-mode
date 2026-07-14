@@ -5,13 +5,30 @@
 
     <main class="app-content content-workspace">
       <!-- Search input container matching your UI layout -->
-      <div class="search-container">
+      <div class="search-container scan-input-container">
         <input 
           type="text" 
           v-model="searchQuery" 
           placeholder="Search PO items..." 
           class="search-input"
+          @keydown.enter.prevent="handleSearchSubmit"
         />
+        <button
+          type="button"
+          class="input-action-btn"
+          aria-label="Scan PO item barcode"
+          @click="openScannerAction"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 7V5a1 1 0 0 1 1-1h2"></path>
+            <path d="M20 7V5a1 1 0 0 0-1-1h-2"></path>
+            <path d="M4 17v2a1 1 0 0 0 1 1h2"></path>
+            <path d="M20 17v2a1 1 0 0 1-1 1h-2"></path>
+            <path d="M7 12h10"></path>
+            <path d="M9 9h6"></path>
+            <path d="M9 15h6"></path>
+          </svg>
+        </button>
       </div>
 
       <!-- Empty State Fallback View -->
@@ -46,6 +63,8 @@
         </div>
       </div>
     </main>
+
+    <QrCodeScanner v-if="isQrScannerOpen" @close="closeScanner" @scanned="handleScan" />
   </div>
 </template>
 
@@ -53,13 +72,16 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import MenuTop from '../../components/menutop/index.vue';
+import QrCodeScanner from '../../components/qrcode/scanner/index.vue';
+import { isWebcamScannerOpen } from '../../util/barcodeScanner.js';
 import { store } from '../../util/store.js';
 
 const router = useRouter();
 const searchQuery = ref('');
+const isQrScannerOpen = ref(false);
 const topMenuItems = [
-  { label: 'Home', to: '/home' },
-  { label: 'Scanned Goods', to: '/scanned_goods' }
+  { label: 'Home', to: '/home', icon: 'home' },
+  { label: 'Scanned Goods', to: '/scanned_goods', icon: 'scanned_goods' }
 ];
 
 /**
@@ -82,7 +104,8 @@ const filteredItems = computed(() => {
   const query = searchQuery.value.toLowerCase();
   return itemsList.value.filter(item => 
     (item.code && item.code.toLowerCase().includes(query)) || 
-    (item.description && item.description.toLowerCase().includes(query))
+    (item.description && item.description.toLowerCase().includes(query)) ||
+    (item.vendorId && String(item.vendorId).toLowerCase().includes(query))
   );
 });
 
@@ -100,6 +123,52 @@ const selectItem = (item) => {
     path: '/receipt_item',
     query: { articleCode: item.code }
   });
+};
+
+const findExactItemMatch = (scanOrQueryValue) => {
+  const normalized = String(scanOrQueryValue || '').trim().toLowerCase();
+  if (!normalized) return null;
+
+  return itemsList.value.find(item => {
+    const codeMatch = item.code && String(item.code).toLowerCase() === normalized;
+    const vendorMatch = item.vendorId && String(item.vendorId).toLowerCase() === normalized;
+    return codeMatch || vendorMatch;
+  }) || null;
+};
+
+const handleSearchSubmit = () => {
+  const matchedItem = findExactItemMatch(searchQuery.value);
+  if (matchedItem) {
+    selectItem(matchedItem);
+  }
+};
+
+const openScannerAction = () => {
+  isWebcamScannerOpen.value = true;
+  isQrScannerOpen.value = true;
+};
+
+const closeScanner = () => {
+  isWebcamScannerOpen.value = false;
+  isQrScannerOpen.value = false;
+};
+
+const handleScan = (scanData) => {
+  const scannedValue = typeof scanData === 'string'
+    ? scanData
+    : scanData && typeof scanData === 'object'
+      ? (scanData.rawText || scanData.odataUrl || '')
+      : '';
+
+  const normalizedScan = String(scannedValue || '').trim();
+  searchQuery.value = normalizedScan;
+
+  const matchedItem = findExactItemMatch(normalizedScan);
+  if (matchedItem) {
+    selectItem(matchedItem);
+  }
+
+  closeScanner();
 };
 </script>
 
@@ -128,6 +197,12 @@ const selectItem = (item) => {
 .search-container {
   width: 100%;
   max-width: 440px;
+  position: relative;
+}
+
+.scan-input-container {
+  display: flex;
+  align-items: center;
 }
 
 .search-input {
@@ -140,6 +215,7 @@ const selectItem = (item) => {
   font-size: 0.95rem;
   box-sizing: border-box;
   outline: none;
+  padding-right: 3.75rem;
 }
 
 .search-input:focus {
@@ -148,6 +224,33 @@ const selectItem = (item) => {
 
 .search-input::placeholder {
   color: var(--text-muted);
+}
+
+.input-action-btn {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 0.65rem;
+  background-color: rgba(var(--accent-rgb), 0.1);
+  color: var(--accent-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.input-action-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.input-action-btn:active {
+  background-color: rgba(var(--accent-rgb), 0.18);
 }
 
 /* Master list flow wrapper framework stack alignment */
