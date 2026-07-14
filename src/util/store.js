@@ -292,5 +292,23 @@ export const storeActions = {
   clearActiveDeliveryCache() {
     store.cache.entityLists['ActiveDelivery'] = null;
     console.log('[STORE ACTION] Active delivery cache data wiped from memory and localstorage.');
+  },
+  clearCapturedReceiptItems() {
+    const cachedData = store.cache.entityLists['ActiveDelivery'];
+    if (!cachedData) return;
+
+    const activeDoc = Array.isArray(cachedData) ? cachedData[0] : cachedData;
+    if (!activeDoc || !Array.isArray(activeDoc.items)) return;
+
+    activeDoc.items.forEach(item => {
+      item.recptQty = 0;
+      item.flags = {
+        damages: false,
+        noBarcode: false,
+        invalidBarcode: false
+      };
+    });
+
+    console.log('[STORE ACTION] Cleared captured receipt quantities while keeping active delivery data.');
   }
 };   

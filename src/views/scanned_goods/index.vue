@@ -55,11 +55,11 @@
 
       <!--Bottom System Process Form Control Action Button Row-->
       <div class="form-actions-row">
-        <!--Delete All/Clear Queue Module Button Trigger-->
+        <!--Clear captured receipt entries while keeping active delivery-->
         <button 
           type="button" 
           class="action-btn-delete" 
-          @click="handleDeleteAll" 
+          @click="handleClearReceiptItems" 
           :disabled="isSubmitting || scannedItems.length === 0"
         >
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
@@ -68,7 +68,7 @@
             <line x1="10" y1="11" x2="10" y2="17"></line>
             <line x1="14" y1="11" x2="14" y2="17"></line>
           </svg>
-          Delete All
+          Clear Receipt Items
         </button>
 
         <!--Save Server/Post Transaction Sync Module Button Trigger-->
@@ -121,11 +121,13 @@ const inspectItem = (code) => {
   router.push({ path: '/outbox_item', query: { articleCode: code } });
 };
 
-const handleDeleteAll = () => {
-  console.log("Triggered sweep deletion request. Purging delivery from cache.");
-  // Use your storeActions setup to empty out the cache item cleanly
-  storeActions.clearActiveDeliveryCache();
-  router.push('/register_delivery');
+const handleClearReceiptItems = () => {
+  console.log('[UI ACTION] Clearing captured receipt items while preserving delivery context.');
+  storeActions.clearCapturedReceiptItems();
+  statusBanner.value = {
+    status: 'success',
+    message: 'Captured receipt items were cleared. Delivery details were kept.'
+  };
 };
 
 //const handleSaveServer = async () => {
