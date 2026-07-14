@@ -1,35 +1,41 @@
 <template>
   <div class="view-wrapper enroll-wrapper">
-    <div class="view-header">Welcome</div>
-    <p class="enroll-subtitle">Enroll a user before securing the app with a PIN.</p>
+    <p class="enroll-kicker">Onboarding</p>
+    <h1 class="view-header">Welcome to GR App</h1>
+    <p class="enroll-subtitle">
+      Please provide your SAP Username and Password,<br>
+      this will be secured by a PIN.
+    </p>
 
-    <form class="enroll-form" @submit.prevent="handleEnroll">
-      <div class="form-group">
-        <label class="form-label" for="enroll-username">Username</label>
-        <input
-          id="enroll-username"
-          v-model.trim="localConfig.username"
-          class="form-input"
-          type="text"
-          autocomplete="username"
-          required
-        />
-      </div>
+    <div class="enroll-panel">
+      <form class="enroll-form" @submit.prevent="handleEnroll">
+        <div class="form-group">
+          <label class="form-label" for="enroll-username">SAP Username</label>
+          <input
+            id="enroll-username"
+            v-model.trim="localConfig.username"
+            class="form-input"
+            type="text"
+            autocomplete="username"
+            required
+          />
+        </div>
 
-      <div class="form-group">
-        <label class="form-label" for="enroll-password">Password</label>
-        <input
-          id="enroll-password"
-          v-model="localConfig.password"
-          class="form-input"
-          type="password"
-          autocomplete="current-password"
-          required
-        />
-      </div>
+        <div class="form-group">
+          <label class="form-label" for="enroll-password">SAP Password</label>
+          <input
+            id="enroll-password"
+            v-model="localConfig.password"
+            class="form-input"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
 
-      <button type="submit" class="submit-btn">Continue to PIN setup</button>
-    </form>
+        <button type="submit" class="submit-btn">Continue to PIN setup</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -70,51 +76,112 @@ const handleEnroll = () => {
 
 <style scoped>
 .enroll-wrapper {
-  padding: 1.5rem 1rem;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem 1.75rem;
+  box-sizing: border-box;
+}
+
+.enroll-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.view-header {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .enroll-subtitle {
-  margin: 0 0 1rem 0;
+  margin: 0.35rem 0 0;
   text-align: center;
-  color: var(--text-muted);
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.enroll-panel {
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 340px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border: 1px solid #dbe3ec;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  padding: 1rem;
 }
 
 .enroll-form {
-  width: min(320px, 100%);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.85rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .form-label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .form-input {
   width: 100%;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.7rem 0.8rem;
-  background-color: var(--surface-color);
-  color: var(--text-main);
+  border: 1px solid #dbe3ec;
+  border-radius: 10px;
+  padding: 0.72rem 0.8rem;
+  background-color: #ffffff;
+  color: #0f172a;
   box-sizing: border-box;
+  font-size: 0.9rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0a6ed1;
+  box-shadow: 0 0 0 2px rgba(10, 110, 209, 0.2);
 }
 
 .submit-btn {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   border: none;
-  border-radius: 6px;
-  padding: 0.8rem;
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
   cursor: pointer;
-  background-color: var(--accent-color);
-  color: var(--text-main);
+  background-color: #0a6ed1;
+  color: #ffffff;
   font-weight: 600;
+  font-size: 0.92rem;
+  transition: background-color 0.15s ease;
+}
+
+.submit-btn:hover {
+  background-color: #0854a0;
+}
+
+@media (max-width: 380px) {
+  .view-header {
+    font-size: 1.45rem;
+  }
+
+  .enroll-subtitle {
+    font-size: 0.82rem;
+  }
+
+  .enroll-panel {
+    padding: 0.9rem;
+  }
 }
 </style>
