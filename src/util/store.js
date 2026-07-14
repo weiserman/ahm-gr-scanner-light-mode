@@ -270,9 +270,24 @@ export const storeActions = {
     console.log('[STORE ACTION] Executing total state and storage wipe...');
     store.appPin = null;
     store.user.isLoggedIn = false;
-    // Reset config to defaults
-    store.config = { ...defaultState.config };
-    localStorage.removeItem(STORAGE_KEY);
+    store.user.name = defaultState.user.name;
+
+    // Reset config field-by-field to avoid stale references.
+    store.config.baseHost = defaultState.config.baseHost;
+    store.config.poPath = defaultState.config.poPath;
+    store.config.grPath = defaultState.config.grPath;
+    store.config.username = '';
+    store.config.password = '';
+    store.config.networkTimeoutMs = defaultState.config.networkTimeoutMs;
+    store.config.useDummyData = defaultState.config.useDummyData;
+    store.config.sapClient = defaultState.config.sapClient;
+
+    store.cache.metadataRawXml = '';
+    store.cache.entityLists = {};
+    store.simulatedOffline = false;
+
+    // Persist the wiped state immediately.
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   },
   clearActiveDeliveryCache() {
     store.cache.entityLists['ActiveDelivery'] = null;
