@@ -1,7 +1,7 @@
 <template>
   <div class="app-layout po-items-view">
     <!-- Reusable Top Navigation Bar Component -->
-    <MenuTop title="PO ITEMS" />
+    <MenuTop title="PO ITEMS" :menu-items="topMenuItems" />
 
     <main class="app-content content-workspace">
       <!-- Search input container matching your UI layout -->
@@ -57,6 +57,10 @@ import { store } from '../../util/store.js';
 
 const router = useRouter();
 const searchQuery = ref('');
+const topMenuItems = [
+  { label: 'Home', to: '/home' },
+  { label: 'Scanned Goods', to: '/scanned_goods' }
+];
 
 /**
  * Computed State Pull:
