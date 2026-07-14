@@ -7,6 +7,16 @@
       this will be secured by a PIN.
     </p>
 
+    <div class="quick-action-row">
+      <button type="button" class="scan-btn" @click="openScannerAction">
+        <svg class="scan-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h5M4 4v5M20 4h-5M20 4v5M4 20h5M4 20v-5M20 20h-5M20 20v-5"></path>
+          <path d="M8 12h8"></path>
+        </svg>
+        Scan config QR code
+      </button>
+    </div>
+
     <div class="enroll-panel">
       <form class="enroll-form" @submit.prevent="handleEnroll">
         <div class="form-group">
@@ -36,15 +46,23 @@
         <button type="submit" class="submit-btn">Continue to PIN setup</button>
       </form>
     </div>
+
+    <div v-if="scanStatus" class="scan-status">{{ scanStatus }}</div>
   </div>
+
+  <QrCodeScanner v-if="isQrScannerOpen" @close="closeScanner" @scanned="handleScan" />
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import QrCodeScanner from '../../components/qrcode/scanner/index.vue';
+import { isWebcamScannerOpen } from '../../util/barcodeScanner.js';
 import { store, storeActions } from '../../util/store.js';
 
 const router = useRouter();
+const isQrScannerOpen = ref(false);
+const scanStatus = ref('');
 
 const localConfig = reactive({
   baseHost: store.config.baseHost,
@@ -57,11 +75,23 @@ const localConfig = reactive({
   sapClient: store.config.sapClient || ''
 });
 
+const normalizeHost = (host) => (host || '').trim().replace(/\/+$/, '');
+const normalizePath = (path) => {
+  const cleaned = (path || '').trim();
+  if (!cleaned) return '/';
+  return cleaned.startsWith('/') ? cleaned : `/${cleaned}`;
+};
+
+const proceedAfterConfigSave = () => {
+  const pinExists = store.appPin !== null && store.appPin !== undefined && store.appPin !== '';
+  router.push(pinExists ? '/enter' : '/setup');
+};
+
 const handleEnroll = () => {
   storeActions.saveODataConfig(
-    localConfig.baseHost,
-    localConfig.poPath,
-    localConfig.grPath,
+    normalizeHost(localConfig.baseHost),
+    normalizePath(localConfig.poPath),
+    normalizePath(localConfig.grPath),
     localConfig.username,
     localConfig.password,
     localConfig.networkTimeoutMs,
@@ -69,8 +99,74 @@ const handleEnroll = () => {
     localConfig.sapClient
   );
 
-  const pinExists = store.appPin !== null && store.appPin !== undefined && store.appPin !== '';
-  router.push(pinExists ? '/enter' : '/setup');
+  proceedAfterConfigSave();
+};
+
+const openScannerAction = () => {
+  scanStatus.value = '';
+  isWebcamScannerOpen.value = true;
+  isQrScannerOpen.value = true;
+};
+
+const closeScanner = () => {
+  isWebcamScannerOpen.value = false;
+  isQrScannerOpen.value = false;
+};
+
+const applyLegacyOdataUrl = (odataUrl) => {
+  try {
+    const parsed = new URL(odataUrl);
+    localConfig.baseHost = `${parsed.protocol}//${parsed.host}`;
+    if (parsed.pathname) {
+      localConfig.poPath = parsed.pathname;
+      localConfig.grPath = parsed.pathname;
+    }
+  } catch (error) {
+    localConfig.baseHost = odataUrl;
+  }
+};
+
+const handleScan = (scanData) => {
+  if (!scanData || typeof scanData !== 'object') {
+    closeScanner();
+    scanStatus.value = 'Scanned QR code is not a valid configuration payload.';
+    return;
+  }
+
+  if (scanData.odataUrl && !scanData.baseHost) {
+    applyLegacyOdataUrl(scanData.odataUrl);
+  }
+
+  if (scanData.baseHost) localConfig.baseHost = String(scanData.baseHost);
+  if (scanData.poPath) localConfig.poPath = String(scanData.poPath);
+  if (scanData.grPath) localConfig.grPath = String(scanData.grPath);
+  if (scanData.username !== undefined) localConfig.username = String(scanData.username || '');
+  if (scanData.password !== undefined) localConfig.password = String(scanData.password || '');
+  if (scanData.networkTimeoutMs !== undefined) localConfig.networkTimeoutMs = Number(scanData.networkTimeoutMs) || 5000;
+  if (scanData.sapClient !== undefined) localConfig.sapClient = String(scanData.sapClient || '');
+  if (scanData.useDummyData !== undefined) localConfig.useDummyData = !!scanData.useDummyData;
+
+  closeScanner();
+
+  const username = (localConfig.username || '').trim();
+  const password = localConfig.password || '';
+  if (!username || !password) {
+    scanStatus.value = 'Config imported. Add SAP username and password to continue.';
+    return;
+  }
+
+  storeActions.saveODataConfig(
+    normalizeHost(localConfig.baseHost),
+    normalizePath(localConfig.poPath),
+    normalizePath(localConfig.grPath),
+    username,
+    password,
+    Number(localConfig.networkTimeoutMs) || 5000,
+    !!localConfig.useDummyData,
+    (localConfig.sapClient || '').trim()
+  );
+  scanStatus.value = 'Configuration imported from QR code.';
+  proceedAfterConfigSave();
 };
 </script>
 
@@ -116,6 +212,33 @@ const handleEnroll = () => {
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
   padding: 1rem;
+}
+
+.quick-action-row {
+  margin-top: 0.9rem;
+  width: 100%;
+  max-width: 340px;
+}
+
+.scan-btn {
+  width: 100%;
+  border: 1px solid #dbe3ec;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 10px;
+  padding: 0.72rem 0.9rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+}
+
+.scan-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
 }
 
 .enroll-form {
@@ -169,6 +292,20 @@ const handleEnroll = () => {
 
 .submit-btn:hover {
   background-color: #0854a0;
+}
+
+.scan-status {
+  margin-top: 0.75rem;
+  width: 100%;
+  max-width: 340px;
+  border-radius: 10px;
+  background-color: rgba(18, 141, 84, 0.08);
+  border: 1px solid rgba(18, 141, 84, 0.25);
+  color: #0a8f56;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  box-sizing: border-box;
 }
 
 @media (max-width: 380px) {
