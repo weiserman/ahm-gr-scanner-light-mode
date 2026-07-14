@@ -151,16 +151,13 @@ const checkIsNativeEnvironment = async () => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 1200);
     
-    const response = await fetch('/api/app/device-status', {
+    const response = await fetch('/api/device/info', {
       method: 'GET',
       signal: controller.signal
     });
     
     clearTimeout(timeoutId);
-    if (!response.ok) return false;
-    
-    const data = await response.json();
-    return data.status === 'active';
+    return response.ok;
   } catch (e) {
     return false;
   }
@@ -274,7 +271,7 @@ const startCameraStream = async () => {
     // This call will trigger your updated MainActivity onPermissionRequest gate automatically and silently!
     await scannerInstance.start({ facingMode: "environment" }, config, onQrCodeDetected, onScanTickFailure);
     
-    feedbackMessage.value = 'Align the server QR code inside the bounding box.';
+    feedbackMessage.value = 'Align the barcode or QR code inside the frame.';
     feedbackStatus.value = '';
   } catch (err) {
     feedbackMessage.value = `Camera Activation Failed: ${err}`;
@@ -286,13 +283,16 @@ const startCameraStream = async () => {
 const onQrCodeDetected = async (decodedText) => {
   console.log("Hardware detected raw QR string:", decodedText);
   await stopCameraStream();
-  let payloadToEmit = null;
+  const payloadToEmit = { rawText: decodedText };
   try {
-    payloadToEmit = JSON.parse(decodedText);
-    console.log("Successfully parsed QR as JSON object:", payloadToEmit);
+    const parsedPayload = JSON.parse(decodedText);
+    if (parsedPayload && typeof parsedPayload === 'object' && !Array.isArray(parsedPayload)) {
+      Object.assign(payloadToEmit, parsedPayload);
+    }
+    console.log("Successfully parsed QR as JSON object:", parsedPayload);
   } catch (err) {
     console.warn("QR text is not JSON. Falling back to plain text object mapping.");
-    payloadToEmit = { odataUrl: decodedText };
+    payloadToEmit.odataUrl = decodedText;
   }
   console.log("Firing scanned event to parent component now.");
   emit('scanned', payloadToEmit);
@@ -487,4 +487,3 @@ const handleCancel = async () => {
 .feedback-banner.success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #10b981; }
 .feedback-banner.warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #f59e0b; }
 </style>
-
