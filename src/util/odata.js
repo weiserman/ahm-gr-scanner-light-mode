@@ -1,228 +1,73 @@
-//--------------------------------------------------------------------------------
-//Previous version not using Broker not dealing with CORS
-//--------------------------------------------------------------------------------
-//import { store } from './store.js';
-//
-//// In-memory cache for the validated token to prevent redundant network handshakes
-//let cachedCsrfToken = null;
-//
-//// utility function to get csrf url
-//const getCsrfUrl = (str, u = new URL(str)) => `${u.origin}${u.pathname.slice(0, u.pathname.lastIndexOf('/', u.pathname.length - 2) + 1)}`;
-//
-//
-///**
-// * Helper Utility: Performs a standard GET handshake with the SAP Gateway root
-// * to fetch and store a fresh operational X-CSRF-Token.
-// */
-//async function fetchSAPCsrfToken(absoluteBaseUrl) {
-//  console.log('[SAP CSRF ENGINE] Handshaking with Gateway using GET to fetch a fresh token...');
-//
-//  absoluteBaseUrl=getCsrfUrl(absoluteBaseUrl)
-//  
-//  const headers = new Headers();
-//  headers.set('X-CSRF-Token', 'Fetch');
-//  headers.set('Accept', 'application/json');
-//
-//  if (store.config.username) {
-//    const encodedCredentials = btoa(`${store.config.username}:${store.config.password || ''}`);
-//    headers.set('Authorization', `Basic ${encodedCredentials}`);
-//  }
-//
-//  try {
-//    // FIXED: Switched from HEAD to a standard GET against the root service document (/)
-//    // This is incredibly lightweight and allowed by all standard SAP security profiles
-//    const response = await fetch(`${absoluteBaseUrl}`, {
-//      method: 'GET',
-//      headers: headers,
-//      mode: 'cors'
-//    });
-//
-//    const token = response.headers.get('x-csrf-token');
-//    if (!token) {
-//      console.warn('[SAP CSRF ENGINE] Server response was successful, but no X-CSRF-Token header was returned.');
-//      return null;
-//    }
-//
-//    cachedCsrfToken = token;
-//    console.log('[SAP CSRF ENGINE] Token fetched and cached successfully via GET handshake.');
-//    return cachedCsrfToken;
-//  } catch (error) {
-//    console.error('[SAP CSRF ENGINE] GET handshake token request failed to execute:', error);
-//    return null;
-//  }
-//}
-//
-///**
-// * High-performance network fetch wrapper configured specifically for SAP Gateway pipelines.
-// */
-//export async function odataFetch(endpointPath, options = {}) {
-//	/*
-//// Updated Default State
-//const defaultState = {
-//  user: { name: 'User', isLoggedIn: false },
-//  appPin: null,
-//  config: {
-//    baseHost: 'https://s4hana2025.professorsoft.com:44300', // New: Common Host
-//    poPath: '/sap/opu/odata4/sap/zgr_ui_poscan_o4/srvd_a2x/sap/zgr_ui_poscan_o4/0001/', // New: Register Service
-//    grPath: '/sap/opu/odata4/sap/zgr_grdoc_api/srvd_a2x/sap/zgr_ui_grdoc_o4/0001', // New: Goods Receipt Service
-//    username: '',
-//    password: '',
-//    networkTimeoutMs: 5000,
-//    useDummyData: false,
-//    sapClient: '100' // Optional: Added for completeness
-//  },
-//  cache: {
-//    metadataRawXml: '',
-//    entityLists: {}
-//  },
-//  simulatedOffline: false
-//};
-//
-//	 */
-//  const { baseHost, username, password, networkTimeoutMs, useDummyData } = store.config;
-//
-//  if (!baseHost)throw new Error('OData Endpoint missing in system settings.');
-//  if (!username)throw new Error('OData Username missing in system settings.');
-//  if (!password)throw new Error('OData Password missing in system settings.');
-//
-//  // --- LOCAL SERVICE WORKER INTERCEPT FOR DUMMY DATA OFFLINE MODE ---
-//  if (useDummyData) {
-//    console.warn(`[SW INTERCEPT ACTIVE] Request passing through to worker layer proxy.`);
-//  }
-//
-//  const cleanBase = baseHost.endsWith('/') ? baseHost.slice(0, -1) : baseHost;
-//  let cleanPath = endpointPath.startsWith('/') ? endpointPath : `/${endpointPath}`;
-//  
-//  // SAP Gateway v4 frequently mandates an explicit format tracking parameter on standard queries
-////  if (!cleanPath.includes('$metadata') && !cleanPath.includes('$format')) {
-////    const separator = cleanPath.includes('?') ? '&' : '?';
-////    cleanPath = `${cleanPath}${separator}$format=json`;
-////  }
-//// FIX: Do not append $format=json if it is an SAP Bound Action namespace containing dots
-//if (!cleanPath.includes('$metadata') && !cleanPath.includes('$format') && !cleanPath.includes('v0001.')) {
-//    const separator = cleanPath.includes('?') ? '&' : '?';
-//    cleanPath = `${cleanPath}${separator}$format=json`;
-//}
-//
-//  const absoluteUrl = `${cleanBase}${cleanPath}`;
-//  console.warn("absoluteUrl:"+absoluteUrl);
-//  const headers = new Headers(options.headers || {});
-//  
-//  // Format configurations to resolve 406 Not Acceptable blockers on structural schemas
-//  if (cleanPath.includes('$metadata')) {
-//    headers.set('Accept', 'application/xml, text/xml, */*');
-//  } else {
-//    headers.set('Accept', 'application/json');
-//    if (options.method && options.method !== 'GET') {
-//      headers.set('Content-Type', 'application/json');
-//    }
-//  }
-//
-//  // Inject standard basic authentication credentials layer
-//  if (username) {
-//    const encodedCredentials = btoa(`${username}:${password || ''}`);
-//    headers.set('Authorization', `Basic ${encodedCredentials}`);
-//  }
-//
-//  // --- AUTOMATIC SAP CSRF SECURE HEADER HANDLING PIPELINE ---
-//  const isModifyingRequest = options.method && options.method !== 'GET' && options.method !== 'HEAD';
-//  
-//  if (isModifyingRequest && !useDummyData) {
-//    // 1. Fetch a fresh token if the local in-memory cache is empty
-//    if (!cachedCsrfToken) {
-//      await fetchSAPCsrfToken(absoluteUrl)
-//    }
-//    
-//    // 2. Append the valid token to the outbound operation payload header group
-//    if (cachedCsrfToken) {
-//      headers.set('X-CSRF-Token', cachedCsrfToken);
-//    }
-//  }
-//
-//  const controller = new AbortController();
-//  const timeoutId = setTimeout(() => controller.abort(), networkTimeoutMs || 5000);
-//
-//  let fetchConfig = {
-//    ...options,
-//    headers,
-//    signal: controller.signal,
-//    mode: 'cors'
-//  };
-//
-//  try {
-//    let response = await fetch(absoluteUrl, fetchConfig);
-//
-//    // --- RECOVERY MECHANISM: RETRY ON EXPIRED TOKEN TIMEOUTS ---
-//    if (response.status === 403 && isModifyingRequest && !useDummyData) {
-//      console.warn('[SAP CSRF ENGINE] Modifying request failed with HTTP 403. Token may have expired. Retrying with a fresh token...');
-//      
-//      // Clear expired token and fetch a new one
-//      cachedCsrfToken = null;
-//      const freshToken = await fetchSAPCsrfToken(absoluteUrl);
-//      
-//      if (freshToken) {
-//        headers.set('X-CSRF-Token', freshToken);
-//        fetchConfig.headers = headers;
-//        
-//        // Fire the exact operation a second time seamlessly
-//        response = await fetch(absoluteUrl, fetchConfig);
-//      }
-//    }
-//
-//    clearTimeout(timeoutId);
-//
-//    if (!response.ok) {
-//      throw new Error(`HTTP ${response.status}: ${response.statusText || 'SAP Gateway Error'}`);
-//    }
-//
-//    // Return text for XML metadata schemas, parse objects for application json datasets
-//    if (cleanPath.includes('$metadata')) {
-//      return await response.text();
-//    }
-//    return await response.json();
-//
-//  } catch (error) {
-//    clearTimeout(timeoutId);
-//    if (error.name === 'AbortError') {
-//      throw new Error(`Network Timeout: SAP server failed to respond within ${networkTimeoutMs}ms.`);
-//    }
-//    throw error;
-//  }
-//}
-//
-///**
-// * Connection diagnostic test function wrapper
-// */
-//export async function testODataConnection() {
-//  console.log(`[SAP DIAGNOSTIC] Pinging metadata schema address line...`);
-//  const xmlPayload = await odataFetch('/$metadata', { method: 'GET' });
-//  
-//  if (xmlPayload && xmlPayload.includes('Edmx')) {
-//    return {
-//      success: true,
-//      message: 'Connected to SAP S/4HANA successfully! Metadata schema loaded.'
-//    };
-//  }
-//  throw new Error('Invalid metadata format returned from SAP server gateway.');
-//}
-//--------------------------------------------------------------------------------
-//New version using Broker to deal with CORS
-//--------------------------------------------------------------------------------
+/**
+ * odata.js — SAP S/4HANA OData v4 Transport Layer
+ *
+ * All outbound SAP requests are routed through the AHM native proxy broker
+ * at /api/net/request to bypass browser CORS restrictions. This module handles:
+ *   - HTTP Basic Authentication header injection
+ *   - X-CSRF-Token fetch / cache / refresh lifecycle
+ *   - $format=json query parameter enforcement
+ *   - Session cookie persistence across broker calls
+ *   - Automatic single-retry on HTTP 403 (expired CSRF token)
+ */
+
 import { store } from './store.js';
 
+// ---------------------------------------------------------------------------
+// Module-scoped state
+// ---------------------------------------------------------------------------
+
+/** In-memory cache for the current X-CSRF-Token. Null until first handshake. */
 let cachedCsrfToken = null;
-let stableSessionCookies = ""; // Global in-memory cookie storage tracking context
+
+/**
+ * Accumulates Set-Cookie values returned by SAP through the broker.
+ * The broker bypasses the browser cookie jar, so we manually capture and
+ * replay these cookies on subsequent requests to maintain session affinity.
+ */
+let stableSessionCookies = "";
+
+/** Local AHM native proxy endpoint — all SAP traffic is POSTed here as a JSON envelope. */
 const BROKER_URL = "/api/net/request";
 
-const getCsrfUrl = (str, u = new URL(str)) => `${u.origin}${u.pathname.slice(0, u.pathname.lastIndexOf('/', u.pathname.length - 2) + 1)}`;
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
 
-// Core helper method that maps your target requests into the native proxy JSON envelope structure
+/**
+ * Derives the SAP Gateway service-root URL from a full request path.
+ * Strips trailing path segments to find the common origin + base path,
+ * which is the correct endpoint for the CSRF token handshake.
+ *
+ * Example:
+ *   "https://host/sap/opu/odata4/sap/ZSRV/0001/SomeEntity"
+ *   → "https://host/sap/opu/odata4/sap/ZSRV/"
+ */
+const getCsrfUrl = (str, u = new URL(str)) =>
+  `${u.origin}${u.pathname.slice(0, u.pathname.lastIndexOf('/', u.pathname.length - 2) + 1)}`;
+
+/**
+ * Wraps an outbound HTTP request into the JSON envelope expected by the
+ * AHM native proxy broker, dispatches it, and normalizes the broker's
+ * response into a mock Response-like object.
+ *
+ * The broker performs the actual HTTP call server-side (no CORS), then
+ * returns { status, headers, body } which we reshape for transparent
+ * consumption by the rest of the OData layer.
+ *
+ * Side-effect: captures any Set-Cookie headers from the response into
+ *              stableSessionCookies for replay on future requests.
+ *
+ * @param {string}   absoluteUrl   Fully-qualified SAP endpoint URL
+ * @param {object}   configOptions Fetch-like config { method, headers (Headers instance), body }
+ * @returns {Promise<object>}      Mock Response with .ok, .status, .json(), .text(), .headers.get()
+ */
 async function executeBrokerRequest(absoluteUrl, configOptions) {
+  // Build a plain-object header map from the Headers instance,
+  // extracting only the headers the broker needs to forward.
   const normalizedHeaders = {
     "Accept": configOptions.headers.get('Accept') || "application/json"
   };
 
-  // Extract authentication parameters out from the explicit Headers instance object mapping
   if (configOptions.headers.has('Authorization')) {
     normalizedHeaders["Authorization"] = configOptions.headers.get('Authorization');
   }
@@ -233,15 +78,16 @@ async function executeBrokerRequest(absoluteUrl, configOptions) {
     normalizedHeaders["Content-Type"] = configOptions.headers.get('Content-Type');
   }
 
-  // Inject or combine active tracking session cookies if cached in memory
+  // Replay any SAP session cookies captured from prior responses.
+  // Strip cookie attributes (path=/, secure, etc.) — only name=value pairs are needed.
   if (stableSessionCookies) {
-    // Sanitize any metadata parameters (like path=/ or secure) out from the cookies stream string
     const cleanCookies = stableSessionCookies.split(',')
       .map(c => c.split(';')[0].trim())
       .join('; ');
     normalizedHeaders["Cookie"] = cleanCookies;
   }
 
+  // Assemble the broker JSON envelope
   const envelope = {
     "timeout_ms": store.config.networkTimeoutMs || 15000,
     "request": {
@@ -252,12 +98,12 @@ async function executeBrokerRequest(absoluteUrl, configOptions) {
   };
 
   if (configOptions.body) {
-    envelope.request.body = typeof configOptions.body === 'string' 
-      ? configOptions.body 
+    envelope.request.body = typeof configOptions.body === 'string'
+      ? configOptions.body
       : JSON.stringify(configOptions.body);
   }
 
-  // Dispatch standard Same-Origin fetch request straight to your native local endpoint broker
+  // Dispatch to the same-origin broker endpoint
   const brokerResponse = await fetch(BROKER_URL, {
     method: 'POST',
     headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -270,7 +116,7 @@ async function executeBrokerRequest(absoluteUrl, configOptions) {
 
   const resultWrapper = await brokerResponse.json();
 
-  // Normalize all keys inside returning headers to standard lowercase for easy client tracking
+  // Normalize response header keys to lowercase for case-insensitive lookup
   if (resultWrapper.headers) {
     const lowerCaseResponseHeaders = {};
     for (const [k, v] of Object.entries(resultWrapper.headers)) {
@@ -278,13 +124,13 @@ async function executeBrokerRequest(absoluteUrl, configOptions) {
     }
     resultWrapper.headers = lowerCaseResponseHeaders;
 
-    // Capture and persist multiple cookie assignments into our runtime session holder
+    // Persist Set-Cookie values for session continuity across broker calls
     if (lowerCaseResponseHeaders["set-cookie"]) {
       stableSessionCookies = lowerCaseResponseHeaders["set-cookie"];
     }
   }
 
-  // Re-wrap the broker return values to match a mock standard Response object mapping model
+  // Return a mock Response object so callers can use .ok, .json(), .text(), etc.
   return {
     status: resultWrapper.status,
     ok: resultWrapper.status >= 200 && resultWrapper.status < 300,
@@ -297,41 +143,74 @@ async function executeBrokerRequest(absoluteUrl, configOptions) {
   };
 }
 
+/**
+ * Performs a GET handshake against the SAP Gateway service root to obtain
+ * a fresh X-CSRF-Token. The token is cached in module-scoped state and
+ * reused for all subsequent modifying (POST/PATCH/PUT/DELETE) requests.
+ *
+ * The handshake URL is derived by stripping the entity-specific path
+ * segments via getCsrfUrl(), targeting the service namespace root.
+ *
+ * @param {string} absoluteBaseUrl  A full SAP OData URL (used to derive the service root)
+ * @returns {Promise<string|null>}  The CSRF token string, or null on failure
+ */
 async function fetchSAPCsrfToken(absoluteBaseUrl) {
-  console.log('[SAP CSRF ENGINE] Handshaking with Gateway using GET to fetch a fresh token...');
+  console.log('[SAP CSRF ENGINE] Handshaking with Gateway via GET to fetch a fresh token...');
   absoluteBaseUrl = getCsrfUrl(absoluteBaseUrl);
-  
+
   const headers = new Headers();
   headers.set('X-CSRF-Token', 'Fetch');
   headers.set('Accept', 'application/json');
-  
+
+  // Authenticate the handshake request with the same Basic Auth credentials
   if (store.config.username) {
     const encodedCredentials = btoa(`${store.config.username}:${store.config.password || ''}`);
     headers.set('Authorization', `Basic ${encodedCredentials}`);
   }
 
   try {
-    const mockOptions = { method: 'GET', headers: headers };
-    const response = await executeBrokerRequest(absoluteBaseUrl, mockOptions);
+    const response = await executeBrokerRequest(absoluteBaseUrl, { method: 'GET', headers });
     const token = response.headers.get('x-csrf-token');
-    
+
     if (!token) {
-      console.warn('[SAP CSRF ENGINE] Server response was successful, but no X-CSRF-Token header was returned.');
+      console.warn('[SAP CSRF ENGINE] Handshake succeeded but no X-CSRF-Token header was returned.');
       return null;
     }
-    
+
     cachedCsrfToken = token;
-    console.log('[SAP CSRF ENGINE] Token fetched and cached successfully via GET handshake.');
+    console.log('[SAP CSRF ENGINE] Token fetched and cached successfully.');
     return cachedCsrfToken;
   } catch (error) {
-    console.error('[SAP CSRF ENGINE] GET handshake token request failed to execute:', error);
+    console.error('[SAP CSRF ENGINE] GET handshake for CSRF token failed:', error);
     return null;
   }
 }
 
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Primary OData fetch function. All SAP data access flows through here.
+ *
+ * Responsibilities:
+ *   1. Validates that required config (baseHost, username, password) is present
+ *   2. Constructs the absolute URL, appending $format=json where required
+ *   3. Sets Accept / Content-Type headers based on endpoint type
+ *   4. Injects Basic Auth credentials
+ *   5. Lazily fetches and caches a CSRF token for modifying requests
+ *   6. Dispatches via the local proxy broker
+ *   7. On HTTP 403 for modifying requests: clears the stale token, fetches a
+ *      fresh one, and transparently retries the exact same request once
+ *
+ * @param {string}  endpointPath  OData path relative to the service root (e.g. "/PurchaseOrder")
+ * @param {object}  [options]     Fetch-like options: { method, headers, body }
+ * @returns {Promise<object|string>}  Parsed JSON for data endpoints, raw XML text for $metadata
+ */
 export async function odataFetch(endpointPath, options = {}) {
   const { baseHost, username, password, useDummyData } = store.config;
-  
+
+  // Guard: require all connection parameters before attempting any network call
   if (!baseHost) throw new Error('OData Endpoint missing in system settings.');
   if (!username) throw new Error('OData Username missing in system settings.');
   if (!password) throw new Error('OData Password missing in system settings.');
@@ -340,9 +219,14 @@ export async function odataFetch(endpointPath, options = {}) {
     console.warn(`[SW INTERCEPT ACTIVE] Request passing through to worker layer proxy.`);
   }
 
+  // Build absolute URL — normalize trailing slashes and leading slashes
   const cleanBase = baseHost.endsWith('/') ? baseHost.slice(0, -1) : baseHost;
   let cleanPath = endpointPath.startsWith('/') ? endpointPath : `/${endpointPath}`;
-  
+
+  // SAP OData v4 requires explicit $format=json on queries, except for:
+  //   - $metadata requests (which return XML)
+  //   - Paths already containing $format
+  //   - Bound-action namespaces (contain "v0001.") which use their own content negotiation
   if (!cleanPath.includes('$metadata') && !cleanPath.includes('$format') && !cleanPath.includes('v0001.')) {
     const separator = cleanPath.includes('?') ? '&' : '?';
     cleanPath = `${cleanPath}${separator}$format=json`;
@@ -351,8 +235,10 @@ export async function odataFetch(endpointPath, options = {}) {
   const absoluteUrl = `${cleanBase}${cleanPath}`;
   console.warn("absoluteUrl:" + absoluteUrl);
 
+  // Set Accept/Content-Type based on endpoint type
   const headers = new Headers(options.headers || {});
   if (cleanPath.includes('$metadata')) {
+    // $metadata returns EDMX XML — must accept XML content types
     headers.set('Accept', 'application/xml, text/xml, */*');
   } else {
     headers.set('Accept', 'application/json');
@@ -361,13 +247,16 @@ export async function odataFetch(endpointPath, options = {}) {
     }
   }
 
+  // Inject HTTP Basic Auth credentials on every request
   if (username) {
     const encodedCredentials = btoa(`${username}:${password || ''}`);
     headers.set('Authorization', `Basic ${encodedCredentials}`);
   }
 
+  // CSRF token: required for all state-changing requests (POST, PATCH, PUT, DELETE).
+  // Fetch lazily on first use, then cache for the session.
   const isModifyingRequest = options.method && options.method !== 'GET' && options.method !== 'HEAD';
-  
+
   if (isModifyingRequest && !useDummyData) {
     if (!cachedCsrfToken) {
       await fetchSAPCsrfToken(absoluteUrl);
@@ -381,9 +270,11 @@ export async function odataFetch(endpointPath, options = {}) {
 
   try {
     let response = await executeBrokerRequest(absoluteUrl, fetchConfig);
-    
+
+    // 403 on a modifying request likely means the CSRF token expired.
+    // Clear the stale token, fetch a fresh one, and retry once transparently.
     if (response.status === 403 && isModifyingRequest && !useDummyData) {
-      console.warn('[SAP CSRF ENGINE] Modifying request failed with HTTP 403. Token may have expired. Retrying with a fresh token...');
+      console.warn('[SAP CSRF ENGINE] HTTP 403 — CSRF token may have expired. Retrying with a fresh token...');
       cachedCsrfToken = null;
       const freshToken = await fetchSAPCsrfToken(absoluteUrl);
       if (freshToken) {
@@ -397,6 +288,7 @@ export async function odataFetch(endpointPath, options = {}) {
       throw new Error(`HTTP ${response.status}: ${response.statusText || 'SAP Gateway Error'}`);
     }
 
+    // $metadata returns raw XML text; all other endpoints return parsed JSON
     if (cleanPath.includes('$metadata')) {
       return await response.text();
     }
@@ -406,12 +298,18 @@ export async function odataFetch(endpointPath, options = {}) {
   }
 }
 
+/**
+ * Diagnostic connectivity test. Pings the SAP $metadata endpoint and
+ * verifies that the response contains an EDMX schema marker.
+ *
+ * @returns {Promise<{success: boolean, message: string}>}
+ * @throws {Error} If the metadata response is invalid or the connection fails
+ */
 export async function testODataConnection() {
-  console.log(`[SAP DIAGNOSTIC] Pinging metadata schema address line...`);
+  console.log(`[SAP DIAGNOSTIC] Pinging $metadata endpoint...`);
   const xmlPayload = await odataFetch('/$metadata', { method: 'GET' });
   if (xmlPayload && xmlPayload.includes('Edmx')) {
     return { success: true, message: 'Connected to SAP S/4HANA successfully! Metadata schema loaded.' };
   }
   throw new Error('Invalid metadata format returned from SAP server gateway.');
 }
-
