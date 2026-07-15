@@ -88,6 +88,20 @@
         </button>
       </div>
     </main>
+
+    <!-- Confirmation dialog for resetting captured receipt items -->
+    <div v-if="isResetDialogOpen" class="reset-dialog-overlay" @click.self="isResetDialogOpen = false">
+      <div class="reset-dialog-card">
+        <h3 class="reset-dialog-title">Reset receipt items?</h3>
+        <p class="reset-dialog-message">
+          This will delete all captured receipt quantities for this delivery. The delivery details will be kept.
+        </p>
+        <div class="reset-dialog-actions">
+          <button type="button" class="secondary-btn" @click="isResetDialogOpen = false">Cancel</button>
+          <button type="button" class="danger-btn reset-confirm-btn" @click="confirmReset">Reset</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -101,6 +115,7 @@ import { EntityService } from '../../util/entities.js';
 const router = useRouter();
 const isSubmitting = ref(false);
 const statusBanner = ref(null);
+const isResetDialogOpen = ref(false);
 
 const activeDeliveryDoc = computed(() => {
   const cachedData = store.cache.entityLists['ActiveDelivery'];
@@ -122,10 +137,12 @@ const inspectItem = (code) => {
   router.push({ path: '/outbox_item', query: { articleCode: code } });
 };
 
-const handleClearReceiptItems = async () => {
-  const confirmed = await window.confirm('Are you sure you want to reset? All captured receipt quantities will be deleted.');
-  if (!confirmed) return;
+const handleClearReceiptItems = () => {
+  isResetDialogOpen.value = true;
+};
 
+const confirmReset = () => {
+  isResetDialogOpen.value = false;
   console.log('[UI ACTION] Clearing captured receipt items while preserving delivery context.');
   storeActions.clearCapturedReceiptItems();
   statusBanner.value = {
@@ -410,4 +427,80 @@ const compileExceptionString = (flags) => {
   padding: 0.85rem 0;
   font-size: 0.95rem;
   font-weight: bold;
-display: flex;align-items: center;justify-content: center;gap: 0.4rem;cursor: pointer;box-shadow: var(--accent-shadow);}.action-btn-save-server:not(:disabled):active {opacity: 0.9;}.action-btn-delete:disabled,.action-btn-save-server:disabled {opacity: 0.4;cursor: not-allowed;}.spinner-icon {width: 14px;height: 14px;border: 2px solid var(--accent-contrast);border-top-color: transparent;border-radius: 50%;animation: spin 0.8s linear infinite;display: inline-block;}@keyframes spin {to { transform: rotate(360deg); }}.empty-state-card {width: 100%;max-width: 440px;background-color: var(--surface-color);border: 1px solid var(--border-color);border-radius: 8px;padding: 3rem 1.5rem;box-sizing: border-box;display: flex;flex-direction: column;align-items: center;gap: 1rem;}.empty-text {font-size: 0.95rem;color: var(--text-muted);margin: 0;}.return-link {color: var(--accent-color);font-size: 0.9rem;font-weight: bold;text-decoration: underline;}</style>
+display: flex;align-items: center;justify-content: center;gap: 0.4rem;cursor: pointer;box-shadow: var(--accent-shadow);}.action-btn-save-server:not(:disabled):active {opacity: 0.9;}.action-btn-delete:disabled,.action-btn-save-server:disabled {opacity: 0.4;cursor: not-allowed;}.spinner-icon {width: 14px;height: 14px;border: 2px solid var(--accent-contrast);border-top-color: transparent;border-radius: 50%;animation: spin 0.8s linear infinite;display: inline-block;}@keyframes spin {to { transform: rotate(360deg); }}.empty-state-card {width: 100%;max-width: 440px;background-color: var(--surface-color);border: 1px solid var(--border-color);border-radius: 8px;padding: 3rem 1.5rem;box-sizing: border-box;display: flex;flex-direction: column;align-items: center;gap: 1rem;}.empty-text {font-size: 0.95rem;color: var(--text-muted);margin: 0;}.return-link {color: var(--accent-color);font-size: 0.9rem;font-weight: bold;text-decoration: underline;}
+
+.reset-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.reset-dialog-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.reset-dialog-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.reset-dialog-message {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.reset-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.secondary-btn {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 6px;
+  padding: 0.72rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-btn {
+  border: 1px solid rgba(209, 67, 67, 0.4);
+  background-color: rgba(209, 67, 67, 0.08);
+  color: #ba2f2f;
+  border-radius: 6px;
+  padding: 0.72rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-btn:active {
+  background-color: rgba(209, 67, 67, 0.18);
+}
+
+.reset-confirm-btn {
+  padding-top: 0.72rem;
+  padding-bottom: 0.72rem;
+}
+</style>
