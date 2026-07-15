@@ -90,10 +90,8 @@
 
       </div>
     </main>
-  </div>
 
-  <!-- Confirmation dialog for discarding an in-progress delivery (teleported to body to avoid overflow clipping) -->
-  <Teleport to="body">
+    <!-- Confirmation dialog for discarding an in-progress delivery -->
     <div v-if="isDiscardDialogOpen" class="reset-dialog-overlay" @click.self="isDiscardDialogOpen = false">
       <div class="reset-dialog-card">
         <h3 class="reset-dialog-title">Discard current delivery?</h3>
@@ -106,7 +104,7 @@
         </div>
       </div>
     </div>
-  </Teleport>
+  </div>
 </template>
 
 <script setup>
