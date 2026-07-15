@@ -90,8 +90,10 @@
 
       </div>
     </main>
+  </div>
 
-    <!-- Confirmation dialog for discarding an in-progress delivery -->
+  <!-- Confirmation dialog for discarding an in-progress delivery (teleported to body to avoid overflow clipping) -->
+  <Teleport to="body">
     <div v-if="isDiscardDialogOpen" class="reset-dialog-overlay" @click.self="isDiscardDialogOpen = false">
       <div class="reset-dialog-card">
         <h3 class="reset-dialog-title">Discard current delivery?</h3>
@@ -104,7 +106,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -130,14 +132,19 @@ const activeDeliveryDoc = computed(() => {
 
 const handleRegisterDeliveryClick = () => {
   const currentDoc = activeDeliveryDoc.value;
+  console.log('[HOME] Register Delivery clicked. Active delivery doc:', currentDoc);
+  
   const poNumber = currentDoc && currentDoc.deliveryNumber ? String(currentDoc.deliveryNumber).trim() : '';
+  console.log('[HOME] Extracted PO number:', poNumber);
 
   if (poNumber) {
     currentPoNumber.value = poNumber;
     isDiscardDialogOpen.value = true;
+    console.log('[HOME] Opening discard confirmation dialog');
     return;
   }
 
+  console.log('[HOME] No active delivery found, navigating directly to register_delivery');
   router.push('/register_delivery');
 };
 
