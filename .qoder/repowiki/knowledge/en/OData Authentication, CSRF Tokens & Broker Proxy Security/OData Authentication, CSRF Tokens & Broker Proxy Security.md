@@ -59,9 +59,16 @@ The broker proxy returns `Set-Cookie` headers from SAP in the response. The modu
 - `$metadata` endpoints use `Accept: application/xml, text/xml, */*` and return raw XML text.
 - All other endpoints use `Accept: application/json` and set `Content-Type: application/json` for modifying requests.
 
-## Legacy Direct-Fetch Implementation
+## On-Device Credential Storage
 
-The file retains the original direct `fetch(...)` implementation (lines 1–207, fully commented out) that performed CORS-mode requests without the broker. This serves as a reference and fallback documentation trail. The active implementation (lines 208+) exclusively uses `executeBrokerRequest`.
+SAP credentials (`store.config.username`, `store.config.password`) are stored as **plain-text strings** in the Vue reactive store, which is automatically persisted to `localStorage` under key `vue_sfc_template_store` via a deep `watch`. The full store state is serialized with `JSON.stringify` on every mutation — there is no encryption, obfuscation, or use of platform secure storage (Android Keystore, Web Crypto, etc.).
+
+- **Write path**: Config view → `storeActions.saveODataConfig(...)` → reactive store → deep watcher → `localStorage.setItem(...)`
+- **Read path**: App startup → `getInitialState()` → `localStorage.getItem(...)` → `JSON.parse` → hydrate reactive store → `odata.js` reads `store.config` on each request
+- **Validation**: `hasConfiguredUser()` checks both fields are non-empty; `odataFetch` throws independently if either is missing
+- **Wipe**: `storeActions.resetStore()` blanks credentials to `''` and persists the cleared state immediately
+
+This is an accepted trade-off for the lightweight offline-first architecture targeting managed Android scanner devices.
 
 ## Security Summary
 
@@ -71,6 +78,6 @@ The file retains the original direct `fetch(...)` implementation (lines 1–207,
 | Write-protection | X-CSRF-Token fetch/cache/refresh cycle |
 | CORS restriction | Native local proxy broker at `/api/net/request` |
 | Session continuity | In-memory `Set-Cookie` capture and replay |
-| Credential storage | Client-side `store.config` (localStorage-backed) |
+| Credential storage | Plain-text in `localStorage` (key: `vue_sfc_template_store`) |
 | Timeout protection | Configurable `networkTimeoutMs` (default 15 000 ms via broker) |
 | Stale token recovery | Automatic single-retry on HTTP 403 |
