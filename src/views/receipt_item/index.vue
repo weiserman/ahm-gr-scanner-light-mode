@@ -386,16 +386,16 @@ onUnmounted(() => {
 }
 
 .content-workspace {
-  padding-top: 5.5rem !important;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-bottom: 1.5rem;
+  padding-top: 0.75rem !important;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-bottom: 0.75rem;
   width: 100%;
   box-sizing: border-box;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.65rem;
   align-items: center;
 }
 
@@ -406,23 +406,23 @@ onUnmounted(() => {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 1.25rem;
+  padding: 0.85rem 1rem;
   box-sizing: border-box;
   text-align: left;
 }
 
 .product-title {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: bold;
-  line-height: 1.4;
-  margin: 0 0 0.75rem 0;
+  line-height: 1.3;
+  margin: 0 0 0.4rem 0;
   color: var(--text-main);
 }
 
 .meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .meta-label {
@@ -441,11 +441,11 @@ onUnmounted(() => {
 
 /* Captured Quantity Text Field feedback selector color tracking */
 .status-counter {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: bold;
   font-family: monospace;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .status-counter.has-qty {
@@ -472,8 +472,8 @@ onUnmounted(() => {
   border: 1px solid var(--border-color);
   color: var(--text-main);
   border-radius: 6px;
-  padding: 0.85rem 0;
-  font-size: 1rem;
+  padding: 0.6rem 0;
+  font-size: 0.95rem;
   font-weight: bold;
   cursor: pointer;
   outline: none;
@@ -495,7 +495,7 @@ onUnmounted(() => {
   max-width: 440px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.4rem;
 }
 
 .toggle-row {
@@ -503,7 +503,7 @@ onUnmounted(() => {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  padding: 0.65rem 1rem;
+  padding: 0.5rem 0.85rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -554,10 +554,10 @@ onUnmounted(() => {
   width: 100%;
   max-width: 440px;
   display: grid;
-  grid-template-columns: 1fr 1.25fr; /* Matches the layout ratio of save button dominance */
-  gap: 0.75rem;
-  margin-top: auto; /* Pushes the button array downward comfortably */
-  padding-top: 1rem;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
 /* Red Clear Button */
@@ -566,13 +566,13 @@ onUnmounted(() => {
   border: 1px solid rgba(var(--danger-rgb), 0.35);
   color: var(--danger-color);
   border-radius: 6px;
-  padding: 0.9rem 0;
-  font-size: 1rem;
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   cursor: pointer;
 }
 
@@ -586,13 +586,13 @@ onUnmounted(() => {
   color: var(--accent-contrast);
   border: none;
   border-radius: 6px;
-  padding: 0.9rem 0;
-  font-size: 1rem;
+  padding: 0.7rem 0;
+  font-size: 0.95rem;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   cursor: pointer;
   box-shadow: var(--accent-shadow);
 }
