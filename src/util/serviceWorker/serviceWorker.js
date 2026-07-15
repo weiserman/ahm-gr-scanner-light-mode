@@ -1,58 +1,72 @@
 /**
- * Service Worker Registration and Interface Controller Module.
+ * Service Worker Registration and Cross-Thread Messaging Module.
+ *
+ * Provides helpers for:
+ *   - Registering the background service worker and waiting for it to
+ *     become fully active without triggering a reload loop.
+ *   - Posting arbitrary payloads from the main thread to the active worker.
+ *   - Attaching a listener that forwards worker responses back to callers.
+ *
+ * @module serviceWorker
  */
 
 /**
- * Registers the service worker script natively using an environment-specific path.
- * Leverages the native .ready promise to avoid window reload infinite loops.
- * 
- * @param {string} workerScriptPath - Explicit path to the script (e.g. '/sw.js' or '/public/sw.js')
+ * Registers the service worker script and waits for it to reach the
+ * 'activated' state. Uses the native `navigator.serviceWorker.ready`
+ * promise to confirm the worker is fully initialised, avoiding the
+ * common window.location.reload() infinite-loop pitfall.
+ *
+ * @param {string} [workerScriptPath='/sw.js'] - Path to the service worker script.
  */
 export function registerServiceWorker(workerScriptPath) {
-  console.log("util/serviceWorker/serviceWorker.js:registerServiceWorker()");
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      var targetPath = workerScriptPath || '/sw.js';
-      
-      console.log('[SW REGISTER] Initiating registration pipeline for target route: ' + targetPath);
-      
-      navigator.serviceWorker.register(targetPath/*, { scope: '/' }*/)
-        .then(function(registration) {
-          console.log('[SW REGISTER] ServiceWorker successfully registered with scope: ', registration.scope);
-          
-          // FIXED: Bypassed the window.location.reload loop by leveraging the native ready state promise
-          navigator.serviceWorker.ready.then(function(readyRegistration) {
-            console.log('[SW REGISTER] Service Worker thread is fully initialized, ready, and active.');
-          });
-        })
-        .catch(function(error) {
-          console.error('[SW REGISTER] Internal registration failure:', error);
+  if (!('serviceWorker' in navigator)) return;
+
+  window.addEventListener('load', () => {
+    const targetPath = workerScriptPath || '/sw.js';
+    console.log('[SW REGISTER] Initiating registration for:', targetPath);
+
+    navigator.serviceWorker.register(targetPath)
+      .then((registration) => {
+        console.log('[SW REGISTER] Registered with scope:', registration.scope);
+
+        // Wait for the worker to finish installing and become active
+        navigator.serviceWorker.ready.then((readyReg) => {
+          console.log('[SW REGISTER] Worker is fully initialised and active.');
         });
-    });
-  }
+      })
+      .catch((error) => {
+        console.error('[SW REGISTER] Registration failed:', error);
+      });
+  });
 }
 
 /**
- * Sends a message payload string block down to the active service worker context thread.
+ * Posts a message payload to the currently controlling service worker.
+ * No-op when no worker is active (e.g. in development without SW).
+ *
+ * @param {*} messageDataPayload - The data to send to the service worker.
  */
 export function sendWorkerMessage(messageDataPayload) {
-  console.log("util/serviceWorker/serviceWorker.js:sendWorkerMessage()");
   if (navigator.serviceWorker && navigator.serviceWorker.controller) {
     navigator.serviceWorker.controller.postMessage(messageDataPayload);
   }
 }
 
 /**
- * Attaches a message listener to intercept responses coming back up out of sw.js.
+ * Attaches a persistent 'message' listener on the service worker
+ * container so that responses pushed from the worker thread are
+ * forwarded to the supplied callback.
+ *
+ * @param {function(*): void} onMessageReceivedCallback - Invoked with the
+ *   event.data payload each time the worker posts a message.
  */
 export function listenForWorkerMessages(onMessageReceivedCallback) {
-  console.log("util/serviceWorker/serviceWorker.js:listenForWorkerMessages()");
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('message', function(event) {
-      if (typeof onMessageReceivedCallback === 'function') {
-	console.log("util/serviceWorker/serviceWorker.js:"+event.data);
-        onMessageReceivedCallback(event.data);
-      }
-    });
-  }
+  if (!('serviceWorker' in navigator)) return;
+
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (typeof onMessageReceivedCallback === 'function') {
+      console.log('[SW MESSAGE]', event.data);
+      onMessageReceivedCallback(event.data);
+    }
+  });
 }

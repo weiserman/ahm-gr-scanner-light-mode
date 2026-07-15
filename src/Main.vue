@@ -13,12 +13,15 @@ import { store } from './util/store.js';
 const route = useRoute();
 const router = useRouter();
 
-// Persistent reference matching your vanilla initialization variable
 let scanCatcher = null;
 
 /**
- * Checks if the picker is actively entering values into standard form fields
- * or server options so we do not disrupt manual text layout loops.
+ * Determines whether the user is actively typing into a standard form field
+ * (input, textarea, or select). The hidden hardware-scanner input is excluded
+ * so that focus can be reclaimed without interrupting manual data entry.
+ *
+ * @returns {boolean} True when focus is on a user-facing form control or the
+ *                    webcam scanner overlay is open.
  */
 const isUserManuallyTyping = () => {
   if (isWebcamScannerOpen.value) return true; // Yield to camera module
@@ -37,27 +40,47 @@ const isUserManuallyTyping = () => {
   return false;
 };
 
+/**
+ * Returns focus to the hidden hardware-scanner input so that the next
+ * Zebra wedge keystroke is captured, but only when the user is not
+ * actively typing into another field.
+ */
 const reclaimScannerFocus = () => {
-  if (!isUserManuallyTyping()) {
-    if (scanCatcher) {
-      scanCatcher.focus();
-    }
+  if (!isUserManuallyTyping() && scanCatcher) {
+    scanCatcher.focus();
   }
 };
 
+/**
+ * Capture-phase click handler attached to document. After any click that
+ * does NOT land on a form input, the scanner focus is reclaimed with a
+ * short delay to let the browser finish its own focus bookkeeping.
+ *
+ * @param {MouseEvent} event - The capture-phase click event.
+ */
 const handleWindowClickReclaim = (event) => {
-  if (event.target && (event.target.tagName.toLowerCase() === 'input' || event.target.tagName.toLowerCase() === 'textarea')) {
-    return;
-  }
+  const tag = event.target && event.target.tagName.toLowerCase();
+  if (tag === 'input' || tag === 'textarea') return;
   setTimeout(reclaimScannerFocus, 50);
 };
 
+/**
+ * Handles the Enter key-down event emitted by the hidden hardware-scanner
+ * input. Zebra wedge scanners emulate a keyboard: they type the decoded
+ * barcode string into the focused element and then fire an Enter key.
+ *
+ * Flow:
+ *  1. Prevent the default Enter behaviour.
+ *  2. Read and clear the accumulated barcode string.
+ *  3. Dispatch the value to processScannedBarcode().
+ *
+ * @param {KeyboardEvent} event - The keydown event from the hidden input.
+ */
 const handleHardwareWedgeInput = (event) => {
   if (event.key === 'Enter') {
-    //alert(`[ZEBRA WEDGED DETECTED]\nData: "${rawScanString}"\nActive View Screen: ${route.path}`);
     event.preventDefault();
     const rawScanString = scanCatcher.value.trim();
-    scanCatcher.value = ''; // Instantly clear buffer for next rapid barcode scan
+    scanCatcher.value = ''; // Clear buffer immediately for the next rapid scan
 
     if (!rawScanString) return;
 
@@ -65,48 +88,25 @@ const handleHardwareWedgeInput = (event) => {
   }
 };
 
-//const processScannedBarcode = (barcodeString) => {
-//  // Scenario 1: If scanning while on the registration screen, fill the input directly as before
-//  if (route.path === '/register_delivery') {
-//    const deliveryInput = document.querySelector('input[placeholder*="PO, STO, DC"]');
-//    if (deliveryInput) {
-//      deliveryInput.value = barcodeString;
-//      deliveryInput.dispatchEvent(new Event('input', { bubbles: true }));
-//    }
-//    return;
-//  }
-//
-//  // Scenario 2: Pull the current active shipment delivery from our global reactive cache
-//  const cachedData = store.cache.entityLists['ActiveDelivery'];
-//  if (!cachedData) {
-//    console.warn('[ZEBRA HW] Scan canceled: No active delivery loaded in memory.');
-//    return;
-//  }
-//  
-//  const activeDoc = Array.isArray(cachedData) ? cachedData[0] : cachedData;
-//  if (!activeDoc || !activeDoc.items) return;
-//
-//  // Search items matrix array to match by Article Code or physical Vendor EAN Barcode string
-//  const matchedItem = activeDoc.items.find(item => {
-//    return item.code === barcodeString || item.vendorId === barcodeString;
-//  });
-//
-//  if (matchedItem) {
-//    console.log(`[ZEBRA HARDWARE MATCH] Found product: ${matchedItem.description}. Updating counters...`);
-//    
-//    // 1. Directly increment the target element counter property in our reactive store
-//    matchedItem.recptQty = (parseInt(matchedItem.recptQty, 10) || 0) + 1;
-//
-//    // 2. Force a programmatic layout swap straight to the interactive screen for that item
-//    router.push({
-//      path: '/receipt_item',
-//      query: { articleCode: matchedItem.code }
-//    });
-//  } else {
-//    console.warn(`[ZEBRA HARDWARE MATCH FAILURE] Code "${barcodeString}" does not belong to this delivery.`);
-//  }
-//};
+/**
+ * Processes a barcode string captured by the Zebra hardware wedge scanner.
+ *
+ * Behaviour depends on the current route:
+ *
+ * • /register_delivery — The barcode is injected directly into the delivery-
+ *   number input field so the existing form pipeline can process it.
+ *
+ * • All other routes — The barcode is matched against the items of the
+ *   currently active delivery (loaded in the global reactive store). On a
+ *   match the item's received quantity is incremented, a custom
+ *   'zebra-hardware-scan-completed' event is dispatched (allowing the
+ *   receipt-item view to update live without a route change), and the
+ *   router navigates to the receipt-item detail screen if not already there.
+ *
+ * @param {string} barcodeString - The raw barcode/ean string from the scanner.
+ */
 const processScannedBarcode = (barcodeString) => {
+  // On the registration screen, fill the PO/STO/DC input directly
   if (route.path === '/register_delivery') {
     const deliveryInput = document.querySelector('input[placeholder*="PO, STO, DC"]');
     if (deliveryInput) {
@@ -116,28 +116,28 @@ const processScannedBarcode = (barcodeString) => {
     return;
   }
 
+  // Match the barcode against the active delivery's item list
   const cachedData = store.cache.entityLists['ActiveDelivery'];
   if (!cachedData) return;
-  
-  const activeDoc = Array.isArray(cachedData) ? cachedData : cachedData;
+
+  const activeDoc = Array.isArray(cachedData) ? cachedData[0] : cachedData;
   if (!activeDoc || !activeDoc.items) return;
 
-  const matchedItem = activeDoc.items.find(item => {
-    return item.code === barcodeString || item.vendorId === barcodeString;
-  });
+  const matchedItem = activeDoc.items.find(item =>
+    item.code === barcodeString || item.vendorId === barcodeString
+  );
 
   if (matchedItem) {
-    // 1. Directly increment the target element row data counter
+    // Increment the item's received-quantity counter in the reactive store
     matchedItem.recptQty = (parseInt(matchedItem.recptQty, 10) || 0) + 1;
 
-    // 2. Broadcast a global notification down to the DOM layer.
-    // If the picker is currently resting on the receipt view screen, 
-    // this event will bypass the router entirely and update the numbers live!
+    // Broadcast a global event so the receipt-item view can update live
+    // without a router transition when the user is already on that screen
     window.dispatchEvent(new CustomEvent('zebra-hardware-scan-completed', {
       detail: { articleCode: matchedItem.code, newQty: matchedItem.recptQty }
     }));
 
-    // 3. Keep the backup routing command intact for initial page warp transitions
+    // Navigate to the receipt-item screen only if not already viewing it
     if (route.path !== '/receipt_item' || route.query.articleCode !== matchedItem.code) {
       router.push({
         path: '/receipt_item',
@@ -148,22 +148,28 @@ const processScannedBarcode = (barcodeString) => {
 };
 
 
-// Reclaim scanner focus instantly during cross-view transition sweeps
+/**
+ * Watches route transitions and reclaims scanner focus after a short delay,
+ * ensuring the hidden input is always ready to capture the next wedge scan
+ * regardless of which view is currently active.
+ */
 watch(() => route.path, () => {
   setTimeout(reclaimScannerFocus, 100);
 });
 
 onMounted(() => {
-  // 1. Programmatically construct the element exactly as your vanilla project did
+  // Programmatically create a hidden input that acts as the keystroke sink
+  // for the Zebra hardware wedge scanner (it emulates keyboard input)
   scanCatcher = document.createElement('input');
   scanCatcher.type = 'text';
   scanCatcher.id = 'hardwareScanCatcher';
-  
-  // 2. Assign properties for maximum broad Android WebKit browser compatibility
+
+  // Suppress the on-screen keyboard on Android WebView while still
+  // allowing hardware keystrokes to land in the input
   scanCatcher.inputMode = 'none';
   scanCatcher.setAttribute('inputmode', 'none');
-  
-  // 3. Match your vanilla project styling properties perfectly
+
+  // Position the element off-screen and make it invisible / non-interactive
   scanCatcher.style.position = 'fixed';
   scanCatcher.style.opacity = '0';
   scanCatcher.style.pointerEvents = 'none';
@@ -174,18 +180,20 @@ onMounted(() => {
   scanCatcher.style.zIndex = '-999999';
 
   document.body.appendChild(scanCatcher);
-  
-  // 4. Attach listeners straight to the generated DOM node
+
+  // Attach the wedge keydown listener and the global click-to-reclaim handler
   scanCatcher.addEventListener('keydown', handleHardwareWedgeInput);
   document.addEventListener('click', handleWindowClickReclaim, true);
 
   reclaimScannerFocus();
 
-  // Continuous background focus safety synchronization checking loop
+  // Background stabiliser: periodically re-asserts scanner focus to guard
+  // against edge cases where third-party UI or route guards steal it
   window.zebraFocusStabilizer = setInterval(reclaimScannerFocus, 1000);
 });
 
 onUnmounted(() => {
+  // Tear down the hidden scanner input and all associated listeners
   if (scanCatcher && document.body.contains(scanCatcher)) {
     scanCatcher.removeEventListener('keydown', handleHardwareWedgeInput);
     document.body.removeChild(scanCatcher);

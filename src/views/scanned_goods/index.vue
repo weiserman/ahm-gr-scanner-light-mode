@@ -117,6 +117,11 @@ const isSubmitting = ref(false);
 const statusBanner = ref(null);
 const isResetDialogOpen = ref(false);
 
+/**
+ * Returns the active delivery document from the reactive store cache,
+ * normalising the value to a single object regardless of whether the
+ * cache stores it as an array or a plain object.
+ */
 const activeDeliveryDoc = computed(() => {
   const cachedData = store.cache.entityLists['ActiveDelivery'];
   if (!cachedData) return null;
@@ -127,20 +132,36 @@ const activeDocNumber = computed(() => {
   return activeDeliveryDoc.value ? activeDeliveryDoc.value.deliveryNumber : 'N/A';
 });
 
+/** Filters the active delivery's items to only those with a non-zero received quantity. */
 const scannedItems = computed(() => {
   if (!activeDeliveryDoc.value || !activeDeliveryDoc.value.items) return [];
   return activeDeliveryDoc.value.items.filter(item => item.recptQty > 0);
 });
 
+/**
+ * Navigates to the outbox-item detail screen for the given article code,
+ * preserving the standard query-parameter routing convention.
+ *
+ * @param {string} code - The SAP Material / article code.
+ */
 const inspectItem = (code) => {
   console.log(`[OUTBOX] Navigating to edit view for item article code: ${code}`);
   router.push({ path: '/outbox_item', query: { articleCode: code } });
 };
 
+/**
+ * Opens the reset-confirmation dialog without modifying any store state.
+ * The actual cache clear only happens when the user confirms.
+ */
 const handleClearReceiptItems = () => {
   isResetDialogOpen.value = true;
 };
 
+/**
+ * Closes the reset dialog and clears all captured receipt quantities
+ * from the active delivery in the reactive store, preserving the
+ * delivery header data.
+ */
 const confirmReset = () => {
   isResetDialogOpen.value = false;
   console.log('[UI ACTION] Clearing captured receipt items while preserving delivery context.');
@@ -151,48 +172,14 @@ const confirmReset = () => {
   };
 };
 
-//const handleSaveServer = async () => {
-//  if (!activeDeliveryDoc.value) return;
-//
-//  isSubmitting.value = true;
-//  statusBanner.value = null;
-//
-//  try {
-//	window.activeDeliveryDoc=activeDeliveryDoc//sq
-//	window.scannedItems=scannedItems.value//sq
-//    console.log("Posting local verification cache arrays downstream via Entity Service...");
-//    
-//    // Dispatches the sanitized parameters safely to your Node.js CAP backend
-//    await EntityService.submitGoodsReceiptTransaction(
-//      activeDeliveryDoc.value.id, 
-//      scannedItems.value
-//    );
-//
-//    console.log("[SERVER SUCCESS] Server save confirmed. Purging delivery data from localstorage...");
-//    
-//    // Clears the cache node array value dynamically from localstorage
-//    storeActions.clearActiveDeliveryCache();
-//    
-//    statusBanner.value = {
-//      status: 'success',
-//      message: 'Transaction saved to server! Cache cleared.'
-//    };
-//
-//    setTimeout(() => {
-//      router.push('/home');
-//    }, 1000);
-//
-//  } catch (error) {
-//    console.error("[SAVE FAILED] Transaction aborted:", error);
-//    statusBanner.value = {
-//      status: 'failed',
-//      message: `Failed to save to server: ${error.message}`
-//    };
-//  } finally {
-//    isSubmitting.value = false;
-//  }
-//};
-// --- UPDATE INSIDE ./src/views/scanned_goods/index.vue ---
+/**
+ * Commits the captured goods-receipt data to SAP via the RAP draft
+ * pipeline (header creation → item append → activation).
+ *
+ * On success the active-delivery cache is flushed and the user is
+ * redirected to the home screen after a short delay. On failure an
+ * error banner is displayed and the form is re-enabled for retry.
+ */
 const handleSaveServer = async () => {
   if (!activeDeliveryDoc.value) return;
   
@@ -200,7 +187,7 @@ const handleSaveServer = async () => {
   statusBanner.value = null;
 
   try {
-    // Debug hooks requested in original source
+    // Expose state on window for ad-hoc debugging in DevTools
     window.activeDeliveryDoc = activeDeliveryDoc;
     window.scannedItems = scannedItems.value;
 
@@ -236,11 +223,24 @@ const handleSaveServer = async () => {
   }
 };
 
+/**
+ * Returns true when any of the item's exception flags are set.
+ *
+ * @param {object} flags - The item's flags object.
+ * @returns {boolean}
+ */
 const hasExceptions = (flags) => {
   if (!flags) return false;
   return flags.damages || flags.noBarcode || flags.invalidBarcode;
 };
 
+/**
+ * Builds a comma-separated human-readable string listing all active
+ * exception flags for an item.
+ *
+ * @param {object} flags - The item's flags object.
+ * @returns {string}
+ */
 const compileExceptionString = (flags) => {
   const list = [];
   if (flags.damages) list.push('Damaged');

@@ -233,7 +233,7 @@ export async function odataFetch(endpointPath, options = {}) {
   }
 
   const absoluteUrl = `${cleanBase}${cleanPath}`;
-  console.warn("absoluteUrl:" + absoluteUrl);
+  console.log('[SAP ODATA] Request URL:', absoluteUrl);
 
   // Set Accept/Content-Type based on endpoint type
   const headers = new Headers(options.headers || {});
@@ -294,6 +294,7 @@ export async function odataFetch(endpointPath, options = {}) {
     }
     return await response.json();
   } catch (error) {
+    console.error('[SAP ODATA] Request failed:', error.message);
     throw error;
   }
 }
