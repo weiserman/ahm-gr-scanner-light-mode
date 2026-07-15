@@ -133,14 +133,13 @@ const activeDeliveryDoc = computed(() => {
 const handleRegisterDeliveryClick = () => {
   const currentDoc = activeDeliveryDoc.value;
   console.log('[HOME] Register Delivery clicked. Active delivery doc:', currentDoc);
-  
-  const poNumber = currentDoc && currentDoc.deliveryNumber ? String(currentDoc.deliveryNumber).trim() : '';
-  console.log('[HOME] Extracted PO number:', poNumber);
 
-  if (poNumber) {
-    currentPoNumber.value = poNumber;
+  if (currentDoc) {
+    // Use deliveryNumber, fall back to id if deliveryNumber is empty
+    const poNumber = currentDoc.deliveryNumber || currentDoc.id || 'Unknown';
+    currentPoNumber.value = String(poNumber).trim();
     isDiscardDialogOpen.value = true;
-    console.log('[HOME] Opening discard confirmation dialog');
+    console.log('[HOME] Opening discard confirmation dialog for PO:', currentPoNumber.value);
     return;
   }
 
