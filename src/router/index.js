@@ -1,3 +1,13 @@
+/**
+ * @file Vue Router Configuration.
+ *
+ * Defines the application's route table using hash-based history and
+ * installs a navigation guard that enforces the onboarding sequence:
+ *   1. SAP credentials (enroll) → 2. PIN setup → 3. PIN entry → app
+ *
+ * @module router
+ */
+
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { hasConfiguredUser, store } from '../util/store.js';
 import Enroll from '../views/enroll/index.vue';
@@ -13,6 +23,7 @@ import ReceiptItem from '../views/receipt_item/index.vue';
 import OutboxItem from '../views/outbox_item/index.vue';
 import Config from '../views/config/index.vue';
 
+/** Application route definitions. */
 const routes = [
   { path: '/', redirect: '/home' },
   { name: 'enroll', path: '/enroll', component: Enroll },
@@ -35,6 +46,15 @@ const router = createRouter({
   routes
 });
 
+/**
+ * Navigation guard enforcing the three-step onboarding gate:
+ *   1. If SAP credentials are missing → redirect to /enroll
+ *   2. If no PIN has been saved       → redirect to /setup
+ *   3. If user is not logged in        → redirect to /enter
+ *
+ * Authenticated users are redirected away from onboarding routes
+ * back to /home.
+ */
 router.beforeEach((to, from, next) => {
   const userConfigured = hasConfiguredUser();
   const pinExists = store.appPin !== null && store.appPin !== undefined && store.appPin !== '';

@@ -1,28 +1,28 @@
 /**
- * Keyboard Shortcut Listener Module
- * Listens for Alt + R to reload the current page.
+ * @file Keyboard Shortcut Listener Module.
+ *
+ * Registers a global Ctrl+R keydown listener that reloads the
+ * current page — useful for quick refreshes during development.
+ *
+ * @module keyboard
  */
 
-// Handles the keydown event to check for Alt + R
+/** Handles the keydown event, intercepting Ctrl+R to reload the page. */
 const handleKeyDown = (event) => {
-  // Check if Alt key is held and 'r' or 'R' is pressed
   if (event.ctrlKey && (event.key === 'r' || event.key === 'R')) {
-    event.preventDefault(); // Prevent default browser behavior if any
-    window.location.reload(); // Reload the current page
+    event.preventDefault();
+    window.location.reload();
   }
 };
 
-/**
- * Registers the Alt + R keyboard shortcut listener.
- */
+/** Registers the Ctrl+R keyboard shortcut listener. */
 export const register = () => {
   window.addEventListener('keydown', handleKeyDown);
 };
 
-/**
- * Unregisters the Alt + R keyboard shortcut listener.
- */
+/** Unregisters the Ctrl+R keyboard shortcut listener. */
 export const unregister = () => {
   window.removeEventListener('keydown', handleKeyDown);
 };
+
 register();

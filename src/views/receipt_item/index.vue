@@ -270,10 +270,6 @@
 </template>
 
 <script setup>
-//import { ref, computed, onMounted, watch } from 'vue';
-//import { useRouter, useRoute } from 'vue-router';
-//import MenuTop from '../../components/menutop/index.vue';
-//import { store } from '../../util/store.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import MenuTop from '../../components/menutop/index.vue';
@@ -282,10 +278,10 @@ import { store } from '../../util/store.js';
 const router = useRouter();
 const route = useRoute();
 
-// Reactively grab the article identifier code from the routing link query mapping
+/** Article code extracted from the route query parameter. */
 const targetArticleCode = computed(() => route.query.articleCode || '');
 
-// Local form element reference input tracking state models
+/** Local reactive refs for the quantity counter and exception flags. */
 const quantity = ref(0);
 const flags = ref({
   damages: false,
@@ -293,19 +289,22 @@ const flags = ref({
   invalidBarcode: false
 });
 
-// Reactively link component boundaries to our shared data store payload list matrix collection
+/** Looks up the current item from the active delivery in the reactive store. */
 const activeItem = computed(() => {
   const cachedData = store.cache.entityLists['ActiveDelivery'];
   if (!cachedData) return null;
-  const activeDoc = Array.isArray(cachedData) ? cachedData : cachedData;
+  const activeDoc = Array.isArray(cachedData) ? cachedData[0] : cachedData;
   if (!activeDoc || !activeDoc.items) return null;
   return activeDoc.items.find(item => item.code === targetArticleCode.value) || null;
 });
 
 /**
- * Event Interceptor Callback
- * Catches the direct programmatic broadcast emitted by Main.vue.
- * If the laser targets the item currently displayed, it updates the visual state live.
+ * Callback for the 'zebra-hardware-scan-completed' custom event
+ * emitted by Main.vue when the hardware wedge scanner decodes a
+ * barcode. If the scanned article matches the one currently on
+ * screen, the quantity display is updated live without a route change.
+ *
+ * @param {CustomEvent} event - Contains { articleCode, newQty }.
  */
 const handleHardwareLaserBroadcast = (event) => {
   const { articleCode, newQty } = event.detail;
@@ -313,10 +312,10 @@ const handleHardwareLaserBroadcast = (event) => {
   if (articleCode === targetArticleCode.value) {
     console.log(`[RECEIPT SCREEN EVENT] Continuous scan captured for ${articleCode}. New Qty: ${newQty}`);
     
-    // 1. Instantly increment the local reactive model variable 
+    // Update the local reactive quantity ref
     quantity.value = newQty;
-    
-    // 2. Direct vanilla DOM baseline sync check fallback layer to force layout rendering updates
+
+    // Direct DOM sync fallback to force layout repaint on slower WebView renders
     const nativeCounterLabel = document.getElementById('lblCapturedQty');
     if (nativeCounterLabel) {
       nativeCounterLabel.textContent = newQty;
@@ -324,11 +323,12 @@ const handleHardwareLaserBroadcast = (event) => {
   }
 };
 
-// Standard manual button quantitative offset adjustments step calculation modules
+/** Adjusts the local quantity by the given delta, clamped to a minimum of 0. */
 const adjustQty = (amount) => {
   quantity.value = Math.max(0, quantity.value + amount);
 };
 
+/** Resets the quantity counter and all exception flags to their defaults. */
 const handleClear = () => {
   console.log("[FORM ACTION] Resetting input trackers to default states...");
   quantity.value = 0;
@@ -337,11 +337,15 @@ const handleClear = () => {
   flags.value.invalidBarcode = false;
 };
 
+/**
+ * Commits the local quantity and flag values back to the matching
+ * item in the reactive store, then navigates to the PO-items list.
+ */
 const handleSave = () => {
   if (!activeItem.value) return;
   console.log(`[STORE WRITE] Committing quantities back onto product row cache target: ${activeItem.value.code}`);
   
-  // Persist local state arrays back onto our unified global storage schema records
+  // Write local state back to the reactive store item
   activeItem.value.recptQty = parseInt(quantity.value, 10) || 0;
   activeItem.value.flags = {
     damages: !!flags.value.damages,
@@ -353,7 +357,7 @@ const handleSave = () => {
 };
 
 onMounted(() => {
-  // Hydrate local layout trackers cleanly when first loading or landing on the page
+  // Hydrate local refs from the store when the page first loads
   if (activeItem.value) {
     quantity.value = activeItem.value.recptQty || 0;
     if (activeItem.value.flags) {
@@ -363,12 +367,12 @@ onMounted(() => {
     }
   }
 
-  // Bind the high-speed event channel listener straight to the global window context root node
+  // Listen for hardware scanner broadcasts on the global window
   window.addEventListener('zebra-hardware-scan-completed', handleHardwareLaserBroadcast);
 });
 
 onUnmounted(() => {
-  // Disconnect the messaging pipelines cleanly to eliminate background thread leakage
+  // Remove the scanner event listener to prevent background leaks
   window.removeEventListener('zebra-hardware-scan-completed', handleHardwareLaserBroadcast);
 });
 </script>

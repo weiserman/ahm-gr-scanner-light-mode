@@ -1,8 +1,27 @@
+/**
+ * @file Vue SFC Runtime Bootstrap.
+ *
+ * Bootstraps a Vue 3 single-file-component application without a
+ * build step by combining vue3-sfc-loader with an in-browser module
+ * resolver. It:
+ *   - Loads Vue and Vue Router as global scripts.
+ *   - Configures a custom SFC loader with a JS module resolver that
+ *     rewrites relative imports into blob URLs.
+ *   - Compiles Main.vue and the router configuration at runtime.
+ *
+ * @module sfcBootstrap
+ */
+
 import { loadModule } from '../lib/vue3-sfc-loader/vue3-sfc-loader.esm.js';
 import * as Vue from '../lib/vue/vue.esm-browser.prod.js';
 
+/**
+ * Bootstraps the Vue SFC application for non-Vite environments.
+ *
+ * @returns {Promise<{createApp: Function, Main: object, router: object|null}>}
+ */
 export async function bootstrapSfcApp() {
-  // Bind Vue globally for the IIFE global router script to consume
+  // Expose Vue globally for the IIFE-bundled Vue Router script
   window.Vue = Vue;
 
   const routerRes = await fetch('./src/lib/vue-router/vue-router.global.prod.js');
@@ -14,16 +33,8 @@ export async function bootstrapSfcApp() {
   document.head.appendChild(script);
   
   const VueRouter = window.VueRouter;
-/*
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.sfc.js')
-        .then(reg => console.log('Offline worker active!', reg.scope))
-        .catch(err => console.error('Worker registration failed:', err));
-    });
-  }
-*/
 
+  // Cache for resolved JS modules (blob URLs + raw exports)
   const customJsCache = {};
 
   const options = {
@@ -131,11 +142,11 @@ export async function bootstrapSfcApp() {
 
   window.sfcLoaderOptions = options;
 
-  // Compile the Main component and your local router configuration script
+  // Compile the root Main component and the router configuration
   const MainComponent = await loadModule('./src/Main.vue', options);
   const routerModule = await options.handleModule('.js', null, './src/router/index.js', options);
 
-  // Return the configured hooks back to our simplified entry file
+  // Return the hooks needed by main.sfc.js to mount the application
   return {
     createApp: Vue.createApp,
     Main: MainComponent,
