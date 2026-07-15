@@ -90,16 +90,32 @@
 
       </div>
     </main>
+
+    <!-- Confirmation dialog for discarding an in-progress delivery -->
+    <div v-if="isDiscardDialogOpen" class="reset-dialog-overlay" @click.self="isDiscardDialogOpen = false">
+      <div class="reset-dialog-card">
+        <h3 class="reset-dialog-title">Discard current delivery?</h3>
+        <p class="reset-dialog-message">
+          PO {{ currentPoNumber }} is being processed. Do you want to discard it?
+        </p>
+        <div class="reset-dialog-actions">
+          <button type="button" class="secondary-btn" @click="isDiscardDialogOpen = false">Keep Working</button>
+          <button type="button" class="danger-btn reset-confirm-btn" @click="confirmDiscard">Discard</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { store, storeActions } from '../../util/store.js';
 import MenuTop from '../../components/menutop/index.vue';
 
 const router = useRouter();
+const isDiscardDialogOpen = ref(false);
+const currentPoNumber = ref('');
 
 const handleLock = () => {
   storeActions.logout();
@@ -112,18 +128,23 @@ const activeDeliveryDoc = computed(() => {
   return Array.isArray(cachedData) ? cachedData[0] : cachedData;
 });
 
-const handleRegisterDeliveryClick = async () => {
+const handleRegisterDeliveryClick = () => {
   const currentDoc = activeDeliveryDoc.value;
-  const currentPoNumber = currentDoc && currentDoc.deliveryNumber ? String(currentDoc.deliveryNumber).trim() : '';
+  const poNumber = currentDoc && currentDoc.deliveryNumber ? String(currentDoc.deliveryNumber).trim() : '';
 
-  if (currentPoNumber) {
-    const shouldDiscard = await window.confirm(`PO ${currentPoNumber} is being processed. Do you want to discard it?`);
-    if (!shouldDiscard) return;
-
-    storeActions.clearCapturedReceiptItems();
-    storeActions.clearActiveDeliveryCache();
+  if (poNumber) {
+    currentPoNumber.value = poNumber;
+    isDiscardDialogOpen.value = true;
+    return;
   }
 
+  router.push('/register_delivery');
+};
+
+const confirmDiscard = () => {
+  isDiscardDialogOpen.value = false;
+  storeActions.clearCapturedReceiptItems();
+  storeActions.clearActiveDeliveryCache();
   router.push('/register_delivery');
 };
 
@@ -323,5 +344,80 @@ const capturedGoodsCount = computed(() => {
   .badge-number {
     font-size: 1.2rem;
   }
+}
+
+.reset-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(17, 24, 39, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.reset-dialog-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.reset-dialog-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.reset-dialog-message {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.reset-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.secondary-btn {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 6px;
+  padding: 0.72rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-btn {
+  border: 1px solid rgba(209, 67, 67, 0.4);
+  background-color: rgba(209, 67, 67, 0.08);
+  color: #ba2f2f;
+  border-radius: 6px;
+  padding: 0.72rem 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-btn:active {
+  background-color: rgba(209, 67, 67, 0.18);
+}
+
+.reset-confirm-btn {
+  padding-top: 0.72rem;
+  padding-bottom: 0.72rem;
 }
 </style>
