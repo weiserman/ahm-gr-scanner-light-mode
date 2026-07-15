@@ -68,7 +68,7 @@
             <line x1="10" y1="11" x2="10" y2="17"></line>
             <line x1="14" y1="11" x2="14" y2="17"></line>
           </svg>
-          Clear Receipt Items
+          Reset
         </button>
 
         <!--Save Server/Post Transaction Sync Module Button Trigger-->
@@ -80,10 +80,11 @@
         >
           <span v-if="isSubmitting" class="spinner-icon"></span>
           <svg v-else viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
-            <path d="M12 2v12M12 14l-4-4M12 14l4-4"></path>
-            <path d="M2 17v3a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"></path>
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
           </svg>
-          {{ isSubmitting ? 'Saving...' : 'Save Server' }}
+          {{ isSubmitting ? 'Saving...' : 'Submit' }}
         </button>
       </div>
     </main>
