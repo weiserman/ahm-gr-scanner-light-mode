@@ -130,7 +130,18 @@ const activeDeliveryDoc = computed(() => {
 
 const handleRegisterDeliveryClick = () => {
   const currentDoc = activeDeliveryDoc.value;
-  console.log('[HOME] Register Delivery clicked. Active delivery doc:', currentDoc);
+  
+  // Debug: Show what's in the cache
+  const debugInfo = {
+    currentDoc: currentDoc,
+    cacheKeys: Object.keys(store.cache.entityLists),
+    activeDeliveryRaw: store.cache.entityLists['ActiveDelivery']
+  };
+  console.log('[HOME] Register Delivery clicked. Debug info:', debugInfo);
+  
+  // Temporary alert for device debugging
+  alert('DEBUG: ActiveDelivery in cache = ' + (currentDoc ? 'YES' : 'NO') + 
+        '\nCache keys: ' + Object.keys(store.cache.entityLists).join(', '));
 
   if (currentDoc) {
     // Use deliveryNumber, fall back to id if deliveryNumber is empty
