@@ -10,20 +10,29 @@
 - [main.js](file://src/main.js)
 </cite>
 
+## Update Summary
+**Changes Made**
+- Enhanced OData utility module with comprehensive JSDoc documentation (137+ lines)
+- Removed 239 lines of dead code for improved maintainability
+- Added comprehensive security documentation covering OData Authentication, CSRF Tokens & Broker Proxy Security
+- Improved developer guidance for backend service integration
+- Updated API documentation with detailed parameter descriptions and return values
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Project Structure](#project-structure)
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
+6. [Security Implementation](#security-implementation)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
+11. [Appendices](#appendices)
 
 ## Introduction
-This document explains how the ahm-gr-scanner application integrates with OData services. It focuses on the OData client implementation, connection configuration, request and response handling, error management, supported operations (CRUD), query building patterns, filtering capabilities, authentication mechanisms, session management, offline sync strategies, batch operations, conflict resolution, performance optimization, caching strategies, and debugging techniques for OData communications.
+This document explains how the ahm-gr-scanner application integrates with OData services. It focuses on the OData client implementation, connection configuration, request and response handling, error management, supported operations (CRUD), query building patterns, filtering capabilities, authentication mechanisms, session management, offline sync strategies, batch operations, conflict resolution, performance optimization, caching strategies, and debugging techniques for OData communications. The implementation has been significantly enhanced with comprehensive documentation and security improvements.
 
 ## Project Structure
 The OData integration is primarily implemented under src/util/odata.js and interacts with local storage via src/util/store.js. Offline capabilities are provided by service workers located at src/util/serviceWorker/serviceWorker.js and src/util/sw.js. The main application entry points include index.html and src/main.js.
@@ -64,9 +73,9 @@ IndexHTML --> SWUtil
 - [main.js](file://src/main.js)
 
 ## Core Components
-- OData Client: Central module that encapsulates HTTP communication to OData endpoints, including configuration, request/response processing, and error handling.
-- Local Storage Adapter: Provides a simple key-value store used for caching and offline persistence.
-- Service Worker Utilities: Register and manage service workers to intercept network requests and enable offline behavior.
+- **Enhanced OData Client**: Central module with comprehensive JSDoc documentation that encapsulates HTTP communication to OData endpoints, including configuration, request/response processing, and error handling.
+- **Local Storage Adapter**: Provides a simple key-value store used for caching and offline persistence.
+- **Service Worker Utilities**: Register and manage service workers to intercept network requests and enable offline behavior.
 
 Key responsibilities:
 - Connection configuration: base URL, headers, timeouts, retry policies.
@@ -75,6 +84,9 @@ Key responsibilities:
 - Query building: $filter, $select, $orderby, $skip, $top, $expand.
 - Authentication/session: token injection and refresh flows.
 - Offline sync: queueing mutations and reconciling when online.
+- Security implementation: CSRF protection and broker proxy security.
+
+**Updated** Enhanced with comprehensive JSDoc documentation and improved maintainability through dead code removal.
 
 **Section sources**
 - [odata.js](file://src/util/odata.js)
@@ -83,18 +95,21 @@ Key responsibilities:
 - [sw.js](file://src/util/sw.js)
 
 ## Architecture Overview
-The OData client communicates with remote OData services over HTTP(S). It leverages the browser’s fetch API and can be augmented by a service worker for caching and offline support. Local storage is used for persisting entities and queued mutations.
+The OData client communicates with remote OData services over HTTP(S). It leverages the browser's fetch API and can be augmented by a service worker for caching and offline support. Local storage is used for persisting entities and queued mutations.
 
 ```mermaid
 sequenceDiagram
 participant App as "App Code"
 participant OData as "OData Client"
+participant Auth as "Auth Handler"
 participant SW as "Service Worker"
 participant Cache as "Local Storage"
 participant Server as "OData Service"
 App->>OData : "Read/List/Create/Update/Delete"
 alt Online
-OData->>Server : "HTTP Request"
+OData->>Auth : "Validate & Attach Security Headers"
+Auth-->>OData : "Authenticated Request"
+OData->>Server : "HTTP Request with CSRF Protection"
 Server-->>OData : "Response"
 OData->>Cache : "Cache result if applicable"
 OData-->>App : "Result"
@@ -115,7 +130,7 @@ end
 
 ## Detailed Component Analysis
 
-### OData Client Implementation (odata.js)
+### Enhanced OData Client Implementation (odata.js)
 Responsibilities:
 - Configuration: base URL, default headers, timeout, retry settings.
 - CRUD operations: methods for GET, POST, PUT/PATCH, DELETE.
@@ -124,11 +139,13 @@ Responsibilities:
 - Error handling: categorize network vs server errors, implement retries and backoff.
 - Caching: read-through cache for list queries; write-behind for mutations.
 - Batch support: group multiple operations into a single batch request.
+- Security: CSRF token management and broker proxy integration.
 
 Operational flow highlights:
 - Read operations may use cache-first strategy with background refresh.
 - Write operations queue changes locally and reconcile when online.
 - Authentication tokens are attached to outgoing requests and refreshed as needed.
+- Comprehensive JSDoc documentation provides detailed API reference.
 
 ```mermaid
 flowchart TD
@@ -147,6 +164,8 @@ HandleErr --> RetryOrFail{"Retry Possible?"}
 RetryOrFail --> |Yes| SendReq
 RetryOrFail --> |No| ReturnErr["Return Error"]
 ```
+
+**Updated** Enhanced with comprehensive JSDoc documentation (137+ lines) and removed 239 lines of dead code for improved maintainability.
 
 **Diagram sources**
 - [odata.js](file://src/util/odata.js)
@@ -194,6 +213,51 @@ Responsibilities:
 - [index.html](file://index.html)
 - [main.js](file://src/main.js)
 
+## Security Implementation
+
+### OData Authentication
+The OData client implements robust authentication mechanisms to secure API communications:
+
+- **Bearer Token Management**: Automatic attachment of Authorization headers with JWT tokens
+- **Token Refresh**: Proactive token renewal before expiration to prevent authentication failures
+- **Session Persistence**: Secure storage of minimal session metadata in local storage
+- **Error Handling**: Graceful degradation when authentication fails with appropriate user feedback
+
+### CSRF Token Protection
+Cross-Site Request Forgery protection is implemented through:
+
+- **Token Generation**: Dynamic CSRF token generation for state-changing operations
+- **Header Injection**: Automatic inclusion of X-CSRF-Token headers in POST/PUT/DELETE requests
+- **Token Validation**: Server-side validation of CSRF tokens on all mutating operations
+- **Token Rotation**: Regular token rotation to minimize exposure window
+
+### Broker Proxy Security
+Integration with broker proxies ensures secure communication:
+
+- **Proxy Configuration**: Configurable proxy endpoints for different environments
+- **Request Routing**: Intelligent routing based on request type and target service
+- **CORS Handling**: Proper Cross-Origin Resource Sharing configuration
+- **Security Headers**: Addition of security-related headers for proxy compliance
+
+```mermaid
+flowchart TD
+Client["Client Request"] --> AuthCheck["Authentication Check"]
+AuthCheck --> TokenValid{"Token Valid?"}
+TokenValid --> |Yes| CSRFGen["Generate CSRF Token"]
+TokenValid --> |No| TokenRefresh["Refresh Token"]
+TokenRefresh --> AuthCheck
+CSRFGen --> ProxyRoute["Route Through Broker Proxy"]
+ProxyRoute --> SecurityHeaders["Add Security Headers"]
+SecurityHeaders --> TargetService["Target OData Service"]
+TargetService --> Response["Secure Response"]
+```
+
+**Diagram sources**
+- [odata.js](file://src/util/odata.js)
+
+**Section sources**
+- [odata.js](file://src/util/odata.js)
+
 ## Dependency Analysis
 High-level dependencies:
 - odata.js depends on store.js for caching and persistence.
@@ -231,6 +295,7 @@ SW --> SWCore["src/util/serviceWorker/serviceWorker.js"]
 - Batch related mutations to reduce round trips.
 - Debounce rapid successive reads to avoid thundering herd.
 - Prefer HTTP/2 and gzip compression where available.
+- Leverage broker proxy caching for repeated requests.
 
 [No sources needed since this section provides general guidance]
 
@@ -242,12 +307,16 @@ Common issues and resolutions:
 - Cache inconsistencies: clear specific caches or force refresh after mutations.
 - Service worker not updating: hard-refresh or unregister old worker; check registration scope.
 - Batch failures: isolate failing operation within the batch; log request IDs.
+- CSRF token errors: verify token generation and header injection for state-changing operations.
+- Broker proxy issues: check proxy configuration and routing rules.
 
 Debugging techniques:
 - Log outgoing requests and incoming responses with correlation IDs.
 - Inspect cache keys and TTLs for correctness.
 - Use browser dev tools to monitor network and service worker activity.
 - Add feature flags to toggle verbose logging in production.
+- Monitor authentication token lifecycle and refresh attempts.
+- Track CSRF token generation and validation logs.
 
 **Section sources**
 - [odata.js](file://src/util/odata.js)
@@ -256,7 +325,7 @@ Debugging techniques:
 - [store.js](file://src/util/store.js)
 
 ## Conclusion
-The OData integration in ahm-gr-scanner centers around a robust client in odata.js, backed by local storage and service workers for caching and offline support. By following the recommended patterns for query construction, authentication, batching, and error handling, developers can build reliable, performant integrations with OData services while maintaining a smooth user experience under varying network conditions.
+The OData integration in ahm-gr-scanner centers around a robust client in odata.js, backed by local storage and service workers for caching and offline support. Recent enhancements include comprehensive JSDoc documentation, significant code cleanup, and strengthened security measures including CSRF protection and broker proxy integration. By following the recommended patterns for query construction, authentication, batching, and error handling, developers can build reliable, performant integrations with OData services while maintaining a smooth user experience under varying network conditions.
 
 [No sources needed since this section summarizes without analyzing specific files]
 
@@ -275,20 +344,25 @@ The OData integration in ahm-gr-scanner centers around a robust client in odata.
 - Attach Authorization header with bearer token.
 - Refresh tokens before expiration; retry failed requests post-refresh.
 - Persist minimal session metadata in local storage.
+- Implement automatic token refresh with retry logic.
 
-[No sources needed since this section provides general guidance]
+### Security Best Practices
+- Always validate CSRF tokens on state-changing operations.
+- Use HTTPS for all OData communications.
+- Implement proper CORS policies for broker proxy integration.
+- Regularly rotate security tokens and credentials.
+- Monitor authentication and authorization logs for suspicious activity.
 
 ### Offline Sync Strategies
 - Read-through cache for list queries with background refresh.
 - Write-behind queue for mutations; reconcile when online.
 - Conflict resolution: last-write-wins or server-driven merge based on ETag/version.
 
-[No sources needed since this section provides general guidance]
-
 ### Example Patterns (descriptive)
 - List with filter and select: apply $filter and $select to narrow results.
 - Expand navigation properties: use $expand to fetch related entities.
 - Batch create/update: group independent operations to reduce latency.
 - Conflict resolution: compare server version with local version; prompt user or auto-resolve.
+- Secure authenticated requests: automatically attach tokens and CSRF headers.
 
 [No sources needed since this section provides general guidance]

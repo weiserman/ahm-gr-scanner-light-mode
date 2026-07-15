@@ -3,7 +3,7 @@ schema_version: 1
 locale: en-US
 branch: main
 nodes_managed: true
-exported_at: "2026-07-15T11:16:02Z"
+exported_at: "2026-07-15T13:05:07Z"
 modules:
     "":
         dir_name: SAP Goods Receipt Scanner — Vue 3 SPA

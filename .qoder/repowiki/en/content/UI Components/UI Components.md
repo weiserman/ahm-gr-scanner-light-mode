@@ -14,7 +14,16 @@
 - [README.md](file://src/components/refreshbutton/README.md)
 - [pinenter/index.vue](file://src/views/pinenter/index.vue)
 - [pinsetup/index.vue](file://src/views/pinsetup/index.vue)
+- [receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated mobile viewport optimization section to reflect receipt item interface improvements
+- Added button label improvement documentation for scanned goods page
+- Enhanced responsive behavior documentation with new spacing patterns
+- Updated usage examples to include improved button interactions
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -22,11 +31,12 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
+6. [Mobile Optimization and Responsive Behavior](#mobile-optimization-and-responsive-behavior)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
+11. [Appendices](#appendices)
 
 ## Introduction
 This document describes the reusable UI components in the ahm-gr-scanner application, focusing on the dialog system, menu bar, PIN input interface, QR code generation and scanning utilities, and a refresh button. It explains props, events, slots, customization options, composition patterns, styling approaches, responsive behavior, accessibility features, cross-browser compatibility, and performance considerations. It also provides guidelines for extending existing components and creating new ones following established patterns.
@@ -52,15 +62,21 @@ end
 subgraph "Views"
 VPE["views/pinenter"]
 VPS["views/pinsetup"]
+VRI["views/receipt_item"]
+VSG["views/scanned_goods"]
 end
 VPE --> P
 VPS --> P
+VRI --> R
+VSG --> R
 D --> VPE
 D --> VPS
 QG --> VPE
 QS --> VPE
 R --> VPE
 R --> VPS
+R --> VRI
+R --> VSG
 ```
 
 [No sources needed since this diagram shows conceptual structure]
@@ -390,6 +406,51 @@ Performance:
 - [RefreshButton.vue](file://src/components/refreshbutton/RefreshButton.vue)
 - [README.md](file://src/components/refreshbutton/README.md)
 
+## Mobile Optimization and Responsive Behavior
+
+### Receipt Item Interface Mobile Optimizations
+The receipt item interface has been optimized for mobile viewport display with significant improvements to spacing and layout efficiency:
+
+**Updated** Reduced padding, gaps, and spacing throughout the receipt item interface to better fit mobile screens while maintaining readability and usability.
+
+Key mobile optimizations include:
+- **Reduced Padding**: Decreased internal padding values to maximize content area on smaller screens
+- **Optimized Gaps**: Minimized spacing between elements to improve information density
+- **Compact Layout**: Streamlined spacing patterns for better mobile screen utilization
+- **Responsive Typography**: Adjusted font sizes and line heights for optimal mobile reading experience
+
+### Scanned Goods Page Button Improvements
+The scanned goods page has received important button label improvements for enhanced clarity and consistency:
+
+**Updated** Button labels have been refined to improve user understanding and interaction patterns:
+
+- **"Clear Receipt Items" → "Reset"**: Simplified button label for clearer action indication
+- **"Save Server" → "Submit"**: More intuitive button label with floppy disk icon for visual reinforcement
+- **Icon Integration**: Added floppy disk icon to submit button for universal recognition
+- **Consistent Terminology**: Aligned button language with common web application patterns
+
+### Mobile-First Design Patterns
+The application follows mobile-first design principles with the following characteristics:
+
+**Spacing Strategy**:
+- Base spacing units scaled appropriately for mobile devices
+- Progressive enhancement for larger screens
+- Consistent spacing tokens across components
+
+**Touch Target Optimization**:
+- Minimum 44px touch targets for interactive elements
+- Adequate spacing between clickable elements
+- Visual feedback for touch interactions
+
+**Content Density Management**:
+- Information hierarchy maintained through spacing variations
+- Progressive disclosure for complex interfaces
+- Collapsible sections for mobile optimization
+
+**Section sources**
+- [receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
+
 ## Dependency Analysis
 Component relationships:
 - Dialog system: useDialog.js orchestrates state; CustomDialog.vue renders UI.
@@ -406,6 +467,8 @@ QRGen["qrcode/generator/index.vue"] --> pinenter
 QRScan["qrcode/scanner/index.vue"] --> pinenter
 RefreshBtn["RefreshButton.vue"] --> pinenter
 RefreshBtn --> pinsetup
+RefreshBtn --> receipt_item["views/receipt_item/index.vue"]
+RefreshBtn --> scanned_goods["views/scanned_goods/index.vue"]
 ```
 
 **Diagram sources**
@@ -417,6 +480,8 @@ RefreshBtn --> pinsetup
 - [RefreshButton.vue](file://src/components/refreshbutton/RefreshButton.vue)
 - [pinenter/index.vue](file://src/views/pinenter/index.vue)
 - [pinsetup/index.vue](file://src/views/pinsetup/index.vue)
+- [receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
 
 **Section sources**
 - [useDialog.js](file://src/components/dialog/useDialog.js)
@@ -427,6 +492,8 @@ RefreshBtn --> pinsetup
 - [RefreshButton.vue](file://src/components/refreshbutton/RefreshButton.vue)
 - [pinenter/index.vue](file://src/views/pinenter/index.vue)
 - [pinsetup/index.vue](file://src/views/pinsetup/index.vue)
+- [receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
 
 ## Performance Considerations
 - Dialog:
@@ -445,8 +512,10 @@ RefreshBtn --> pinsetup
 - Refresh Button:
   - Guard against duplicate requests
   - Show loading state to prevent repeated clicks
-
-[No sources needed since this section provides general guidance]
+- Mobile Optimizations:
+  - Reduced DOM manipulation for better mobile performance
+  - Optimized spacing calculations for smoother scrolling
+  - Efficient button state management for improved responsiveness
 
 ## Troubleshooting Guide
 Common issues and resolutions:
@@ -465,6 +534,14 @@ Common issues and resolutions:
 - Refresh button not responding:
   - Inspect loading state and click handlers
   - Ensure network request completes and resets loading
+- Mobile layout issues:
+  - Verify viewport meta tag configuration
+  - Check responsive breakpoints and spacing values
+  - Test touch target sizes and spacing
+- Button interaction problems:
+  - Confirm proper event binding after label changes
+  - Verify icon rendering and accessibility attributes
+  - Test button states and feedback mechanisms
 
 **Section sources**
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
@@ -472,11 +549,11 @@ Common issues and resolutions:
 - [index.vue](file://src/components/qrcode/scanner/index.vue)
 - [index.vue](file://src/components/qrcode/generator/index.vue)
 - [RefreshButton.vue](file://src/components/refreshbutton/RefreshButton.vue)
+- [receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
 
 ## Conclusion
-The ahm-gr-scanner UI components provide a cohesive set of reusable building blocks for dialogs, menus, PIN input, QR utilities, and refresh actions. They follow consistent APIs, emphasize accessibility and responsiveness, and include practical patterns for extension and customization. By adhering to the documented props, events, slots, and best practices, developers can compose robust and maintainable interfaces.
-
-[No sources needed since this section summarizes without analyzing specific files]
+The ahm-gr-scanner UI components provide a cohesive set of reusable building blocks for dialogs, menus, PIN input, QR utilities, and refresh actions. They follow consistent APIs, emphasize accessibility and responsiveness, and include practical patterns for extension and customization. Recent mobile viewport optimizations and button label improvements enhance the user experience across different screen sizes and interaction patterns. By adhering to the documented props, events, slots, and best practices, developers can compose robust and maintainable interfaces.
 
 ## Appendices
 
@@ -500,8 +577,14 @@ The ahm-gr-scanner UI components provide a cohesive set of reusable building blo
 - Refresh button usage:
   - Toggle loading state around async operations
   - Provide tooltip and icon customization
-
-[No sources needed since this section provides general guidance]
+- Mobile optimization patterns:
+  - Implement responsive spacing using CSS custom properties
+  - Use flexible layouts that adapt to different screen sizes
+  - Optimize touch interactions with appropriate spacing and sizing
+- Button interaction patterns:
+  - Use clear, action-oriented labels
+  - Include visual icons for universal recognition
+  - Provide appropriate feedback states
 
 ### Extending Existing Components
 - Add new props with defaults and validation
@@ -509,5 +592,6 @@ The ahm-gr-scanner UI components provide a cohesive set of reusable building blo
 - Support slots for flexible content injection
 - Maintain accessibility attributes and keyboard navigation
 - Document changes in README files
-
-[No sources needed since this section provides general guidance]
+- Consider mobile-first design principles when adding new features
+- Ensure button labels and interactions follow established patterns
+- Test responsive behavior across different screen sizes

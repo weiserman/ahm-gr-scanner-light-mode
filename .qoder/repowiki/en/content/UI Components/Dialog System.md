@@ -5,7 +5,17 @@
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
 - [useDialog.js](file://src/components/dialog/useDialog.js)
 - [README.md](file://src/components/dialog/README.md)
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Updated to reflect enhanced dialog system with custom inline dialogs replacing browser-native window.confirm calls
+- Added documentation for new inline discard dialogs implemented in home page Register Delivery tile
+- Added documentation for reset dialogs in scanned goods page
+- Enhanced usage examples to demonstrate consistent user experience patterns
+- Updated integration patterns section with real-world implementation examples
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -13,10 +23,11 @@
 3. [Core Components](#core-components)
 4. [Architecture Overview](#architecture-overview)
 5. [Detailed Component Analysis](#detailed-component-analysis)
-6. [Dependency Analysis](#dependency-analysis)
-7. [Performance Considerations](#performance-considerations)
-8. [Troubleshooting Guide](#troubleshooting-guide)
-9. [Conclusion](#conclusion)
+6. [Inline Dialog Implementation Patterns](#inline-dialog-implementation-patterns)
+7. [Dependency Analysis](#dependency-analysis)
+8. [Performance Considerations](#performance-considerations)
+9. [Troubleshooting Guide](#troubleshooting-guide)
+10. [Conclusion](#conclusion)
 
 ## Introduction
 This document describes the dialog system component, focusing on:
@@ -25,9 +36,10 @@ This document describes the dialog system component, focusing on:
 - Usage examples for common dialog patterns (confirmation, alert, custom content)
 - Lifecycle, z-index management, keyboard navigation, and accessibility features
 - Styling customization, responsive behavior, and integration patterns
+- Inline dialog implementation patterns replacing browser-native confirm dialogs
 - Troubleshooting guidance and performance optimization tips
 
-The goal is to provide both a quick-start guide and an in-depth reference for developers integrating dialogs into their application.
+The goal is to provide both a quick-start guide and an in-depth reference for developers integrating dialogs into their application, with emphasis on maintaining consistent user experience across the application design language.
 
 ## Project Structure
 The dialog system is implemented under src/components/dialog with two primary files:
@@ -42,11 +54,15 @@ UD["useDialog.js"]
 end
 App["Your Application Code"] --> UD
 UD --> CD
+Home["Home Page"] --> UD
+ScannedGoods["Scanned Goods Page"] --> UD
 ```
 
 **Diagram sources**
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
 - [useDialog.js](file://src/components/dialog/useDialog.js)
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
 
 **Section sources**
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
@@ -212,6 +228,63 @@ For concrete code samples, see:
 - [useDialog.js](file://src/components/dialog/useDialog.js)
 - [README.md](file://src/components/dialog/README.md)
 
+## Inline Dialog Implementation Patterns
+
+**Updated** Enhanced dialog system now provides custom inline dialogs that replace browser-native window.confirm calls, ensuring consistent user experience matching the application design language.
+
+### Discard Confirmation Pattern
+The home page Register Delivery tile demonstrates the inline discard dialog pattern:
+- Replaces native browser confirm dialogs with custom styled dialogs
+- Maintains consistent visual design across the application
+- Provides better accessibility and keyboard navigation
+- Allows for more complex confirmation scenarios
+
+### Reset Confirmation Pattern  
+The scanned goods page implements reset dialogs following the same pattern:
+- Consistent user experience for destructive actions
+- Proper focus management and keyboard support
+- Integration with application-wide dialog system
+- Accessible markup and screen reader support
+
+### Implementation Benefits
+- **Consistent UX**: All confirmation dialogs match application design language
+- **Accessibility**: Full keyboard navigation and screen reader support
+- **Flexibility**: Easy to customize content and styling per use case
+- **Maintainability**: Centralized dialog logic reduces code duplication
+
+```mermaid
+graph LR
+Subgraph "Native Browser Confirm"
+BC["window.confirm()"]
+BN["Basic styling only"]
+BA["Limited accessibility"]
+end
+Subgraph "Custom Inline Dialog"
+CD["CustomDialog Component"]
+CS["Consistent styling"]
+CA["Full accessibility"]
+CK["Keyboard navigation"]
+end
+User["User Action"] --> Decision{"Destructive Action?"}
+Decision --> |Yes| CustomDialog
+Decision --> |No| Continue["Continue Flow"]
+CustomDialog --> UserChoice{"User Choice"}
+UserChoice --> |Confirm| ExecuteAction
+UserChoice --> |Cancel| CancelAction
+ExecuteAction --> ContinueFlow["Continue Process"]
+CancelAction --> ReturnToPrevious["Return to Previous State"]
+```
+
+**Diagram sources**
+- [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
+
+**Section sources**
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
+- [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
+
 ## Dependency Analysis
 - Internal dependencies
   - useDialog.js depends on CustomDialog.vue to render and manage the modal instance
@@ -227,11 +300,15 @@ UD["useDialog.js"] --> CD["CustomDialog.vue"]
 CD --> Vue["Vue 3 Runtime"]
 CD --> CSS["CSS Transitions"]
 CD --> Browser["Browser APIs"]
+Home["Home Page"] --> UD
+ScannedGoods["Scanned Goods Page"] --> UD
 ```
 
 **Diagram sources**
 - [useDialog.js](file://src/components/dialog/useDialog.js)
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
 
 **Section sources**
 - [useDialog.js](file://src/components/dialog/useDialog.js)
@@ -244,8 +321,7 @@ CD --> Browser["Browser APIs"]
 - Event listeners: Attach/detach keyboard and overlay listeners only when necessary
 - Memory leaks: Always clean up listeners and timers on unmount
 - Re-rendering: Avoid large reactive payloads in props; pass stable references where possible
-
-[No sources needed since this section provides general guidance]
+- Inline dialog efficiency: Minimize DOM manipulation when switching between different dialog types
 
 ## Troubleshooting Guide
 - Dialog not closing on Escape
@@ -277,11 +353,18 @@ CD --> Browser["Browser APIs"]
   - Ensure role="dialog" and proper focus management
   - Reference: [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
 
+- Inconsistent dialog styling
+  - Verify all dialogs use the CustomDialog component instead of native confirm
+  - Check that inline dialogs follow the established patterns from home and scanned goods pages
+  - Reference: [index.vue](file://src/views/home/index.vue), [index.vue](file://src/views/scanned_goods/index.vue)
+
 **Section sources**
 - [CustomDialog.vue](file://src/components/dialog/CustomDialog.vue)
 - [useDialog.js](file://src/components/dialog/useDialog.js)
+- [index.vue](file://src/views/home/index.vue)
+- [index.vue](file://src/views/scanned_goods/index.vue)
 
 ## Conclusion
-The dialog system combines a flexible declarative component with a concise imperative API. It emphasizes accessibility, keyboard navigation, and predictable lifecycle management. By following the guidelines and troubleshooting steps above, you can integrate dialogs consistently across your application while maintaining performance and usability.
+The dialog system combines a flexible declarative component with a concise imperative API. It emphasizes accessibility, keyboard navigation, and predictable lifecycle management. The enhanced inline dialog implementation replaces browser-native confirm dialogs with consistent, accessible alternatives that match the application design language. By following the guidelines and troubleshooting steps above, you can integrate dialogs consistently across your application while maintaining performance and usability.
 
-[No sources needed since this section summarizes without analyzing specific files]
+The move from native browser dialogs to custom inline dialogs provides significant benefits in terms of user experience consistency, accessibility compliance, and maintainability. Developers should prefer using the CustomDialog component and useDialog composable over native browser confirm functions to ensure a cohesive user experience throughout the application.
