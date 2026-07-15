@@ -122,7 +122,10 @@ const inspectItem = (code) => {
   router.push({ path: '/outbox_item', query: { articleCode: code } });
 };
 
-const handleClearReceiptItems = () => {
+const handleClearReceiptItems = async () => {
+  const confirmed = await window.confirm('Are you sure you want to reset? All captured receipt quantities will be deleted.');
+  if (!confirmed) return;
+
   console.log('[UI ACTION] Clearing captured receipt items while preserving delivery context.');
   storeActions.clearCapturedReceiptItems();
   statusBanner.value = {
