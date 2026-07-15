@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: lib_vendor
+title: Bundled Third-Party Vendor Libraries
+scope:
+    - src/lib/
+source_files: []
+depends_on: []
+related_to: []

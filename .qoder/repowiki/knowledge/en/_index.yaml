@@ -1,0 +1,178 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-07-15T11:16:02Z"
+modules:
+    "":
+        dir_name: SAP Goods Receipt Scanner — Vue 3 SPA
+        title: SAP Goods Receipt Scanner — Vue 3 SPA
+        scope:
+            - README.md
+            - .gitignore
+            - package.json
+            - vite.config.js
+            - index.html
+            - error.html
+            - serve.sh
+            - aichunk
+            - index.sfc.html
+            - index.vite.html
+            - mock-sw.js
+            - package-lock.json
+            - qr.png
+            - vite.config.js.000
+        source_files: []
+        children:
+            - app_shell
+            - components
+            - lib_vendor
+            - public_assets
+            - util
+            - views
+        depends_on: []
+        related_to: []
+    app_shell:
+        dir_name: Vue App Shell & Hardware Scanner Bootstrap
+        title: Vue App Shell & Hardware Scanner Bootstrap
+        scope:
+            - src/main.js
+            - src/Main.vue
+            - src/style.css
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: util/bootstrap_helpers
+            - path: util/service_worker
+    components:
+        dir_name: Reusable UI Components & Dialog Shell
+        title: Reusable UI Components & Dialog Shell
+        scope:
+            - src/components/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: views/delivery_workflow
+    lib_vendor:
+        dir_name: Bundled Third-Party Vendor Libraries
+        title: Bundled Third-Party Vendor Libraries
+        scope:
+            - src/lib/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    public_assets:
+        dir_name: Public Assets, Dev Scripts & Landing Page
+        title: Public Assets, Dev Scripts & Landing Page
+        scope:
+            - public/
+            - docs/
+            - scripts/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    util:
+        dir_name: SAP Goods Receipt Scanner — Shared Runtime Utilities
+        title: SAP Goods Receipt Scanner — Shared Runtime Utilities
+        scope:
+            - src/util/
+        source_files: []
+        children:
+            - util/bootstrap_helpers
+            - util/data_layer
+            - util/service_worker
+        depends_on: []
+        related_to: []
+    util/bootstrap_helpers:
+        dir_name: Bootstrap, Barcode Scanner & Keyboard Utilities
+        title: Bootstrap, Barcode Scanner & Keyboard Utilities
+        scope:
+            - src/util/sfcBootstrap.js
+            - src/util/barcodeScanner.js
+            - src/util/keyboard.js
+            - src/util/dummy.json
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_shell
+    util/data_layer:
+        dir_name: SAP OData Data Layer (Store, Entities & Transport)
+        title: SAP OData Data Layer (Store, Entities & Transport)
+        scope:
+            - src/util/store.js
+            - src/util/entities.js
+            - src/util/odata.js
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: views/delivery_workflow
+            - path: views/onboarding
+    util/service_worker:
+        dir_name: Service Worker Registration & Cross-Thread Messaging Bridge
+        title: Service Worker Registration & Cross-Thread Messaging Bridge
+        scope:
+            - src/util/serviceWorker/
+            - src/util/sw.js
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: app_shell
+    views:
+        dir_name: Vue Single-File View Pages
+        title: Vue Single-File View Pages
+        scope:
+            - src/views/
+        source_files: []
+        children:
+            - views/delivery_workflow
+            - views/onboarding
+            - views/settings_about
+        depends_on: []
+        related_to: []
+    views/delivery_workflow:
+        dir_name: Goods Receipt Delivery Workflow Views
+        title: Goods Receipt Delivery Workflow Views
+        scope:
+            - src/views/register_delivery/
+            - src/views/goods_to_scan/
+            - src/views/scanned_goods/
+            - src/views/po_items/
+            - src/views/receipt_item/
+            - src/views/outbox_item/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: components
+            - path: util/data_layer
+    views/onboarding:
+        dir_name: SAP Onboarding & PIN Security Flows
+        title: SAP Onboarding & PIN Security Flows
+        scope:
+            - src/views/enroll/
+            - src/views/pinenter/
+            - src/views/pinsetup/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: util/data_layer
+    views/settings_about:
+        dir_name: App Shell Views (Home, Config, About)
+        title: App Shell Views (Home, Config, About)
+        scope:
+            - src/views/config/
+            - src/views/about/
+            - src/views/home/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

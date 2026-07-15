@@ -1,0 +1,2 @@
+- Vendor libraries are pinned as checked-in distribution files under `src/lib/<pkg>/` and consumed through explicit relative import paths rather than npm package names.
+- Multi-format builds (CJS, ESM, global UMD) are kept side-by-side in the same directory and selected by the consumer based on the runtime environment.

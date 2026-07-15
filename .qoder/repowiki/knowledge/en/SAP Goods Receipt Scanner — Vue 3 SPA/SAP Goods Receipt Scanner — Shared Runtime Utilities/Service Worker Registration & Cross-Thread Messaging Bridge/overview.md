@@ -1,0 +1,1 @@
+Registers the background service worker thread and exposes a small API for posting messages to it and listening for responses, plus a dev-mode toggle that swaps in a mock worker.

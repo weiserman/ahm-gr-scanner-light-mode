@@ -1,0 +1,2 @@
+- All persistent application state lives in the single `window.__GLOBAL_APP_STORE__` reactive object exported from `store.js`; children read config fields from it and mutate via `storeActions` methods rather than direct assignment.
+- Every outbound SAP request goes through `odataFetch` in `odata.js`, which enforces Basic Auth, CSRF token lifecycle, `$format=json` suffixing, and proxy-broker transport — no module calls `fetch` against the gateway directly.

@@ -1,0 +1,1 @@
+Collection of Vue 3 single-file components providing a global dialog shell, PIN keypad, QR code generator/scanner, top navigation bar, and floating refresh button.

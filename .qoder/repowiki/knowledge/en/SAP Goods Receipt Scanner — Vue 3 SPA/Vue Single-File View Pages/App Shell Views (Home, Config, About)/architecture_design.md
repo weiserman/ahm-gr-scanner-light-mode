@@ -1,0 +1,6 @@
+Three sibling single-file components under `src/views/`, each a self-contained page mounted by vue-router:
+- `home/index.vue` is the main dashboard tile grid; it reads live counters from `../../util/store.js` (`store.cache.entityLists['ActiveDelivery']`) via computed properties and navigates to child routes (`/register_delivery`, `/goods_to_scan`, `/scanned_goods`, `/config`).
+- `config/index.vue` implements the two-mode SAP connection wizard (Basic vs Advanced), persists settings through `storeActions.saveODataConfig(...)`, performs out-of-band `$metadata` connectivity checks via the local `/api/net/request` proxy, and supports QR-based config import/export through `QrCode` + `QrCodeScanner`.
+- `about/index.vue` is a static read-only info screen.
+
+All three share the same layout contract: wrap content in `<MenuTop>` for the fixed top bar, then a `<main class="app-content content-workspace">` body. State is centralized in `../../util/store.js` / `storeActions`; no cross-view imports exist between these three files. External dependencies are only `vue`, `vue-router`, and the shared `components/menutop`, `components/qrcode/*`, and `util/*` packages.

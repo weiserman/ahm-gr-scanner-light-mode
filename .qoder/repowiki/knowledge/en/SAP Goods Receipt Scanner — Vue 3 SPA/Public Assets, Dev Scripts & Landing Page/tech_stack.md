@@ -1,0 +1,1 @@
+Service Worker API (fetch/install/activate lifecycle); Android ADB + Monkey + `run-as` sandbox access; `darkhttpd` static server; `qrencode` for terminal QR rendering; qrcodejs CDN for the docs landing page.

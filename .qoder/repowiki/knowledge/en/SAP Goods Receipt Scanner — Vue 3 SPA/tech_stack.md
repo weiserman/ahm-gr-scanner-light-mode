@@ -1,0 +1,1 @@
+Vite 8 with `@vitejs/plugin-vue` builds a Vue 3 SPA; production assets are served via `darkhttpd` (serve.sh) or Python's `http.server`; mobile dev relies on `qrencode` in the terminal to print a scannable LAN URL.

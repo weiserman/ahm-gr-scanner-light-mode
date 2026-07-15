@@ -1,0 +1,9 @@
+schema_version: 1
+module_path: components
+title: Reusable UI Components & Dialog Shell
+scope:
+    - src/components/
+source_files: []
+depends_on: []
+related_to:
+    - path: views/delivery_workflow

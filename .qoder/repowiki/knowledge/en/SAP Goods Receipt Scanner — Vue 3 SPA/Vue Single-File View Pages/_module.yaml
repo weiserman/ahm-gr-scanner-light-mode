@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: views
+title: Vue Single-File View Pages
+scope:
+    - src/views/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: util
+title: SAP Goods Receipt Scanner — Shared Runtime Utilities
+scope:
+    - src/util/
+source_files: []
+depends_on: []
+related_to: []

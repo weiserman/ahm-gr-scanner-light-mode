@@ -1,0 +1,2 @@
+- Every feature page lives in its own directory with a single `index.vue` entry file.
+- Views consume shared UI/state exclusively through the Pinia store (`useStore`) and helper functions imported from `@/store/index.js` rather than direct component imports.

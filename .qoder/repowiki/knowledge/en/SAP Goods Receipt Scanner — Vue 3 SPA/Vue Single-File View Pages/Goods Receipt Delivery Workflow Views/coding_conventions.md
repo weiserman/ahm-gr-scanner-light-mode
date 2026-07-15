@@ -1,0 +1,6 @@
+- Each page is a single `index.vue` file exporting a default SFC with template/script/style in one block; no sub-components are extracted into this module.
+- Shared read-only data is always accessed through `store.cache.entityLists['ActiveDelivery']` via a local `computed` that guards against null and normalizes arrays to single objects before use.
+- Cross-view selection is communicated exclusively through `router.push({ path: '/...', query: { articleCode: ... } })` rather than props or events.
+- Barcode input follows a dual pattern: toggle `isWebcamScannerOpen` + render `<QrCodeScanner>` for software scanning, and listen on `window.zebra-hardware-scan-completed` for hardware scanners.
+- UI feedback uses a local banner ref `{ status: 'success'|'failed', message }` rendered inside a `.status-banner` div with a dynamic class binding instead of alert dialogs.
+- Navigation targets are hard-coded string routes (`'/goods_to_scan'`, `'/po_items'`, `'/scanned_goods'`, `'/home'`) rather than imported route names.

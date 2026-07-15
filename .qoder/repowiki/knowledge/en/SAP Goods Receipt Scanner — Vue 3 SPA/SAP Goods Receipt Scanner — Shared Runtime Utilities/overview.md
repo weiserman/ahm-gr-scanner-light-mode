@@ -1,0 +1,1 @@
+Aggregates the app's cross-cutting runtime helpers: Vue SFC bootstrap, a global reactive store, SAP OData transport through a local proxy broker, entity adapters, service-worker registration, and barcode/keyboard shortcuts.

@@ -1,0 +1,1 @@
+Top-level Vite workspace that wires a Vue 3 SPA (app shell, views, components, utilities, vendored libs) behind an OData proxy broker and service-worker cache for Android WebView / mobile scanning.

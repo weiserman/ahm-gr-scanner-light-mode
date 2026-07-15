@@ -1,0 +1,1 @@
+Top-level Vue 3 single-file views grouped by feature that compose the app shell, onboarding, and goods-receipt delivery workflow.

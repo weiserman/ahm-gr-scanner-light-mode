@@ -1,0 +1,1 @@
+Vue single-file views implementing the goods-receipt workflow: register delivery, browse PO items, capture quantities per item, review scanned goods, and commit to SAP.

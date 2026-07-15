@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: util/service_worker
+title: Service Worker Registration & Cross-Thread Messaging Bridge
+scope:
+    - src/util/serviceWorker/
+    - src/util/sw.js
+source_files: []
+depends_on: []
+related_to:
+    - path: app_shell

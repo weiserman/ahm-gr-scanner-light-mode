@@ -1,0 +1,1 @@
+Vue 3 Composition API (`<script setup>`, `defineProps`, `defineEmits`, `defineExpose`); `vue-router` for `menutop`; `html5-qrcode` loaded as a global script (`window.__Html5QrcodeLibrary__`) for camera scanning; custom in-repo `lib/qr-code-generator/qr-code-generator-lib.mjs` for static QR generation.

@@ -1,0 +1,1 @@
+Git-checked-in, vendored copies of runtime JavaScript libraries (Vue 3, Vue Router, html5-qrcode, qr-code-generator, vue3-sfc-loader, petite-vue) consumed directly by the app's source.

@@ -1,0 +1,1 @@
+Vue 3 reactivity (`reactive`, `watch`) for global state; native `fetch` proxied through a local `/api/net/request` broker to handle SAP Gateway CORS; Basic Authentication + X-CSRF-Token handshake against SAP S/4HANA OData v4 services (`$metadata` XML, JSON payloads).

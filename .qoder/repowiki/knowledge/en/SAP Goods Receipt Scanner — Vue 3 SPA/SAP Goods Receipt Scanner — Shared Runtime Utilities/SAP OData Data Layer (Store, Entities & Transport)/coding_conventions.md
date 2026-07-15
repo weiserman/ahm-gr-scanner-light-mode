@@ -1,0 +1,4 @@
+- Every mutating operation logs a bracketed tag like `[STORE ACTION]`, `[SAP ENTITY SERVICE]`, or `[SAP PIPELINE]` so console output can be filtered by subsystem.
+- Endpoint URLs are assembled by string-interpolating `store.config.baseHost` with per-service sub-paths (`poPath`, `grPath`) rather than hard-coding full absolute URLs at call sites.
+- Error propagation wraps low-level failures in domain-specific `Error` messages prefixed with the subsystem tag (e.g. `SAP PO Lookup Failed:` / `SAP Receipt Submission Failed:`) instead of throwing raw network errors.
+- State mutations go exclusively through exported `storeActions` methods (login, logout, saveODataConfig, setMetadataCache, etc.) rather than assigning directly onto the reactive store outside this module.

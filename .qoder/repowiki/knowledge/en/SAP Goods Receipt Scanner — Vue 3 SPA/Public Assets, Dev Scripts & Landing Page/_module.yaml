@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: public_assets
+title: Public Assets, Dev Scripts & Landing Page
+scope:
+    - public/
+    - docs/
+    - scripts/
+source_files: []
+depends_on: []
+related_to: []

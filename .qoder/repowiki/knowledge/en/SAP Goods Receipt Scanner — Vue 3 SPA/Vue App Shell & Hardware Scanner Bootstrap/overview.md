@@ -1,0 +1,1 @@
+Bootstraps the Vue application, mounts the root component with router and global styles, and hosts a hidden input that intercepts Zebra barcode scanner wedge keystrokes.

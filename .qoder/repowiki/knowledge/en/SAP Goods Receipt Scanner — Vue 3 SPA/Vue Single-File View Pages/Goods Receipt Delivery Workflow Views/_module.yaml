@@ -1,0 +1,15 @@
+schema_version: 1
+module_path: views/delivery_workflow
+title: Goods Receipt Delivery Workflow Views
+scope:
+    - src/views/register_delivery/
+    - src/views/goods_to_scan/
+    - src/views/scanned_goods/
+    - src/views/po_items/
+    - src/views/receipt_item/
+    - src/views/outbox_item/
+source_files: []
+depends_on: []
+related_to:
+    - path: components
+    - path: util/data_layer
