@@ -91,33 +91,17 @@
       </div>
     </main>
   </div>
-
-  <!-- Confirmation dialog teleported to body to escape any CSS containment -->
-  <Teleport to="body">
-    <div v-if="isDiscardDialogOpen" class="home-discard-dialog-overlay" @click.self="isDiscardDialogOpen = false">
-      <div class="home-discard-dialog-card">
-        <h3 class="home-discard-dialog-title">Discard current delivery?</h3>
-        <p class="home-discard-dialog-message">
-          PO {{ currentPoNumber }} is being processed. Do you want to discard it?
-        </p>
-        <div class="home-discard-dialog-actions">
-          <button type="button" class="home-discard-btn-secondary" @click="isDiscardDialogOpen = false">Keep Working</button>
-          <button type="button" class="home-discard-btn-danger" @click="confirmDiscard">Discard</button>
-        </div>
-      </div>
-    </div>
-  </Teleport>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { store, storeActions } from '../../util/store.js';
+import { useDialog } from '../../components/dialog/useDialog.js';
 import MenuTop from '../../components/menutop/index.vue';
 
 const router = useRouter();
-const isDiscardDialogOpen = ref(false);
-const currentPoNumber = ref('');
+const dialog = useDialog();
 
 const handleLock = () => {
   storeActions.logout();
@@ -130,43 +114,29 @@ const activeDeliveryDoc = computed(() => {
   return Array.isArray(cachedData) ? cachedData[0] : cachedData;
 });
 
-const handleRegisterDeliveryClick = () => {
+const handleRegisterDeliveryClick = async () => {
   const currentDoc = activeDeliveryDoc.value;
-  
-  // Debug: Show what's in the cache
-  const debugInfo = {
-    currentDoc: currentDoc,
-    cacheKeys: Object.keys(store.cache.entityLists),
-    activeDeliveryRaw: store.cache.entityLists['ActiveDelivery']
-  };
-  console.log('[HOME] Register Delivery clicked. Debug info:', debugInfo);
-  
-  // Temporary alert for device debugging
-  alert('DEBUG: ActiveDelivery in cache = ' + (currentDoc ? 'YES' : 'NO') + 
-        '\nCache keys: ' + Object.keys(store.cache.entityLists).join(', '));
+  console.log('[HOME] Register Delivery clicked. Active delivery doc:', currentDoc);
 
   if (currentDoc) {
-    // Use deliveryNumber, fall back to id if deliveryNumber is empty
     const poNumber = currentDoc.deliveryNumber || currentDoc.id || 'Unknown';
-    currentPoNumber.value = String(poNumber).trim();
-    isDiscardDialogOpen.value = true;
+    const message = `PO ${poNumber} is being processed. Do you want to discard it?`;
     
-    // Debug: verify state was set
-    alert('DEBUG: isDiscardDialogOpen is now = ' + isDiscardDialogOpen.value + 
-          '\nPO Number: ' + currentPoNumber.value);
+    // Use the app's built-in dialog system
+    const confirmed = await dialog.open('confirm', 'Discard current delivery?\n\n' + message);
     
-    console.log('[HOME] Opening discard confirmation dialog for PO:', currentPoNumber.value);
+    if (confirmed) {
+      console.log('[HOME] User confirmed discard for PO:', poNumber);
+      storeActions.clearCapturedReceiptItems();
+      storeActions.clearActiveDeliveryCache();
+      router.push('/register_delivery');
+    } else {
+      console.log('[HOME] User cancelled discard, keeping current delivery');
+    }
     return;
   }
 
   console.log('[HOME] No active delivery found, navigating directly to register_delivery');
-  router.push('/register_delivery');
-};
-
-const confirmDiscard = () => {
-  isDiscardDialogOpen.value = false;
-  storeActions.clearCapturedReceiptItems();
-  storeActions.clearActiveDeliveryCache();
   router.push('/register_delivery');
 };
 
@@ -366,84 +336,5 @@ const capturedGoodsCount = computed(() => {
   .badge-number {
     font-size: 1.2rem;
   }
-}
-</style>
-
-<!-- Non-scoped styles for the teleported dialog (rendered at body level) -->
-<style>
-.home-discard-dialog-overlay {
-  position: fixed !important;
-  inset: 0 !important;
-  background-color: rgba(17, 24, 39, 0.45) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 99999 !important;
-  padding: 1rem;
-  box-sizing: border-box;
-}
-
-.home-discard-dialog-card {
-  width: 100%;
-  max-width: 400px;
-  background: #ffffff;
-  border: 1px solid #d9dfe7;
-  border-radius: 10px;
-  padding: 1rem;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-}
-
-.home-discard-dialog-title {
-  margin: 0;
-  font-size: 1rem;
-  color: #1d2d3e;
-}
-
-.home-discard-dialog-message {
-  margin: 0;
-  font-size: 0.84rem;
-  color: #556b82;
-  line-height: 1.4;
-}
-
-.home-discard-dialog-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.55rem;
-  margin-top: 0.5rem;
-}
-
-.home-discard-btn-secondary {
-  border: 1px solid #d9dfe7;
-  background: transparent;
-  color: #1d2d3e;
-  border-radius: 6px;
-  padding: 0.72rem 0;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.home-discard-btn-secondary:active {
-  background: #eef1f4;
-}
-
-.home-discard-btn-danger {
-  border: 1px solid rgba(209, 67, 67, 0.4);
-  background-color: rgba(209, 67, 67, 0.08);
-  color: #ba2f2f;
-  border-radius: 6px;
-  padding: 0.72rem 0;
-  font-size: 0.9rem;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.home-discard-btn-danger:active {
-  background-color: rgba(209, 67, 67, 0.18);
 }
 </style>
