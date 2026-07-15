@@ -90,21 +90,23 @@
 
       </div>
     </main>
+  </div>
 
-    <!-- Confirmation dialog for discarding an in-progress delivery -->
-    <div v-if="isDiscardDialogOpen" class="reset-dialog-overlay" @click.self="isDiscardDialogOpen = false">
-      <div class="reset-dialog-card">
-        <h3 class="reset-dialog-title">Discard current delivery?</h3>
-        <p class="reset-dialog-message">
+  <!-- Confirmation dialog teleported to body to escape any CSS containment -->
+  <Teleport to="body">
+    <div v-if="isDiscardDialogOpen" class="home-discard-dialog-overlay" @click.self="isDiscardDialogOpen = false">
+      <div class="home-discard-dialog-card">
+        <h3 class="home-discard-dialog-title">Discard current delivery?</h3>
+        <p class="home-discard-dialog-message">
           PO {{ currentPoNumber }} is being processed. Do you want to discard it?
         </p>
-        <div class="reset-dialog-actions">
-          <button type="button" class="secondary-btn" @click="isDiscardDialogOpen = false">Keep Working</button>
-          <button type="button" class="danger-btn reset-confirm-btn" @click="confirmDiscard">Discard</button>
+        <div class="home-discard-dialog-actions">
+          <button type="button" class="home-discard-btn-secondary" @click="isDiscardDialogOpen = false">Keep Working</button>
+          <button type="button" class="home-discard-btn-danger" @click="confirmDiscard">Discard</button>
         </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -148,6 +150,11 @@ const handleRegisterDeliveryClick = () => {
     const poNumber = currentDoc.deliveryNumber || currentDoc.id || 'Unknown';
     currentPoNumber.value = String(poNumber).trim();
     isDiscardDialogOpen.value = true;
+    
+    // Debug: verify state was set
+    alert('DEBUG: isDiscardDialogOpen is now = ' + isDiscardDialogOpen.value + 
+          '\nPO Number: ' + currentPoNumber.value);
+    
     console.log('[HOME] Opening discard confirmation dialog for PO:', currentPoNumber.value);
     return;
   }
@@ -360,55 +367,60 @@ const capturedGoodsCount = computed(() => {
     font-size: 1.2rem;
   }
 }
+</style>
 
-.reset-dialog-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(17, 24, 39, 0.22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+<!-- Non-scoped styles for the teleported dialog (rendered at body level) -->
+<style>
+.home-discard-dialog-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background-color: rgba(17, 24, 39, 0.45) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
   padding: 1rem;
   box-sizing: border-box;
 }
 
-.reset-dialog-card {
+.home-discard-dialog-card {
   width: 100%;
   max-width: 400px;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: #ffffff;
+  border: 1px solid #d9dfe7;
   border-radius: 10px;
   padding: 1rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
-.reset-dialog-title {
+.home-discard-dialog-title {
   margin: 0;
   font-size: 1rem;
-  color: var(--text-main);
+  color: #1d2d3e;
 }
 
-.reset-dialog-message {
+.home-discard-dialog-message {
   margin: 0;
   font-size: 0.84rem;
-  color: var(--text-muted);
+  color: #556b82;
   line-height: 1.4;
 }
 
-.reset-dialog-actions {
+.home-discard-dialog-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.55rem;
+  margin-top: 0.5rem;
 }
 
-.secondary-btn {
-  border: 1px solid var(--border-color);
+.home-discard-btn-secondary {
+  border: 1px solid #d9dfe7;
   background: transparent;
-  color: var(--text-main);
+  color: #1d2d3e;
   border-radius: 6px;
   padding: 0.72rem 0;
   font-size: 0.9rem;
@@ -416,7 +428,11 @@ const capturedGoodsCount = computed(() => {
   cursor: pointer;
 }
 
-.danger-btn {
+.home-discard-btn-secondary:active {
+  background: #eef1f4;
+}
+
+.home-discard-btn-danger {
   border: 1px solid rgba(209, 67, 67, 0.4);
   background-color: rgba(209, 67, 67, 0.08);
   color: #ba2f2f;
@@ -427,12 +443,7 @@ const capturedGoodsCount = computed(() => {
   cursor: pointer;
 }
 
-.danger-btn:active {
+.home-discard-btn-danger:active {
   background-color: rgba(209, 67, 67, 0.18);
-}
-
-.reset-confirm-btn {
-  padding-top: 0.72rem;
-  padding-bottom: 0.72rem;
 }
 </style>
