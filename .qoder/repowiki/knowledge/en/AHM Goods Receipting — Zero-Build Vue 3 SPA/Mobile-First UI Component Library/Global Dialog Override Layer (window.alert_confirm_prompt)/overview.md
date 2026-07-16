@@ -1,0 +1,1 @@
+Vue 3 composable that hijacks window.alert, window.confirm, and window.prompt to render a mobile-optimised async modal instead of blocking native dialogs.

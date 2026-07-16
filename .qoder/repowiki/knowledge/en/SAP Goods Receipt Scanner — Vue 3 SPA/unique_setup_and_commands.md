@@ -1,1 +1,0 @@
-`npm start` runs Vite dev on port 3000 listening on `0.0.0.0` and auto-prints a QR of the WSL-host IP; `npm run dist` produces `dist/index.html`; `bash serve.sh` serves the repo root on port 4321 with darkhttpd headers suitable for an embedded WebView.

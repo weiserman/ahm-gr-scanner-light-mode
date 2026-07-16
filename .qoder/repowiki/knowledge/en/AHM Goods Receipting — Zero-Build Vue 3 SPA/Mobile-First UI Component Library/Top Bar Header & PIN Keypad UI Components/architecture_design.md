@@ -1,0 +1,6 @@
+Two independent, single-file Vue 3 components under `src/components/` — no shared logic between them.
+
+- `menutop/index.vue`: A fixed-position `<header>` that renders either inline icon buttons (when ≤2 menu items) or a hamburger + absolute-positioned popover (when >2). Menu entries are normalized via a computed filter (`item && item.to && item.label`) and icons are chosen by route path fallback (`/home`, `/scanned_goods`) or an explicit `icon` prop. The popover is dismissed by a document-level click listener attached in `onMounted`/removed in `onBeforeUnmount`, and also closed when `route.fullPath` changes.
+- `pinmobile/PinMobile.vue`: A self-contained numeric keypad that builds its grid from `length`, emits `submit` once the internal string reaches that threshold (deferred through `nextTick` to avoid transition races), and exposes `clearAll` via `defineExpose`. It registers a global `keydown` listener for hardware-key entry.
+
+Both components depend only on Vue 3 reactivity primitives and `vue-router`'s `useRoute`; neither imports from other local modules, making them leaf UI building blocks consumed by parent layouts.

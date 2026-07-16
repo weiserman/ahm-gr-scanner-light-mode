@@ -1,0 +1,4 @@
+Two sibling service workers under `public/` share the same install/activate lifecycle but differ in fetch behavior:
+- `sw.js` is the production SW: it installs, immediately calls `skipWaiting()`, activates with `self.clients.claim()` to take over existing tabs, and then passes every `fetch` through unchanged via `fetch(event.request)` (no caching layer yet).
+- `mock-sw.js` is a dev-only proxy: it defines an inline `DUMMY_DELIVERY_DATA` fixture and, on `fetch`, matches URLs containing `/odata/v4/catalog/` to short-circuit responses — returning JSON for `getDeliveriesByNumber` and `submitGoodsReceipt`, and a minimal `$metadata` XML document so the OData client validates without hitting a real backend.
+Both use the same activation pattern (`install` → `skipWaiting`, `activate` → `clients.claim`) to avoid reload lag inside WebViews. The module has no build step; files are served as static assets from the web root.

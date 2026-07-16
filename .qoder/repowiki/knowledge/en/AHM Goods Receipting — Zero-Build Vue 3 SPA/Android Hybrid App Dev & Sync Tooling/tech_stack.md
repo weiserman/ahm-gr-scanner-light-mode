@@ -1,0 +1,1 @@
+POSIX bash with GNU `find`/`stat` timestamp polling (no filesystem watcher); ADB Windows binary at `/mnt/c/usr/bin/adb.exe`; `darkhttpd` as the lightweight HTTP server; `qrencode` for terminal QR rendering; `google-chrome --disable-web-security` for local WebView debugging.

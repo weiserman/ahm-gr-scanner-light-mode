@@ -1,4 +1,0 @@
-- Each component lives in its own folder with a single `*.vue` (or `index.vue`) entry file that owns both template and scoped `<style>`, keeping styling co-located with logic.
-- Components declare inputs via `defineProps({...})` with explicit `type`/`default` and surface side-effects through `defineEmits([...])` rather than using a shared store.
-- Global side effects (keyboard listeners, document click handlers, window overrides) are registered in `onMounted` / `onBeforeUnmount` lifecycle hooks so they are always cleaned up on unmount.
-- The dialog subsystem centralizes all modal state in a module-level `ref` singleton attached to `window[GLOBAL_KEY]`, exposing it through a `useDialog()` composable instead of prop drilling.

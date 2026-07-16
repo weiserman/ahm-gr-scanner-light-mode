@@ -1,0 +1,1 @@
+Requires WSL2-style Windows ADB path (`/mnt/c/usr/bin/adb.exe`), `darkhttpd`, `qrencode`, and `tput` available on PATH. `watch.sh` and `zip.sh` assume Linux `stat -c %Y` semantics. The app package name and remote paths (`/sdcard/Documents/MyHybridMobile/www`, `files/www`) are hardcoded inside each script and must match the deployed Android app.

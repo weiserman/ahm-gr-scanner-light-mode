@@ -1,1 +1,0 @@
-Top-level Vue 3 view pages that compose the app shell — home dashboard, SAP OData configuration wizard, and an about/info screen — using shared MenuTop and store utilities.

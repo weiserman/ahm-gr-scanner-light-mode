@@ -1,3 +1,0 @@
-- Each exported function begins with a console.log echoing its module path and function name for traceability across the main-thread / worker boundary.
-- All Service Worker interactions are guarded by a `'serviceWorker' in navigator` feature check before any registration or messaging call.
-- Cross-thread communication uses a single `postMessage` pipeline where payloads are plain objects expected to carry a `type` string property.

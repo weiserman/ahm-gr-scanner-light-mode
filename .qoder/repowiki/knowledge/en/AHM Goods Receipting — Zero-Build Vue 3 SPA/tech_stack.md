@@ -1,0 +1,1 @@
+Vite 8 with @vitejs/plugin-vue as the only bundler; Vue 3 + vue-router 4 loaded from vendored `lib_vendor/` artifacts at runtime; darkhttpd used by `serve.sh` for local static serving; qrencode invoked at dev-server start to print a scannable LAN URL in the terminal.

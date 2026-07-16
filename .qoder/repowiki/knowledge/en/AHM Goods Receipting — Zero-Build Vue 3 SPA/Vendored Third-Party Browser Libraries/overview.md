@@ -1,0 +1,1 @@
+Ships prebuilt browser artifacts of Vue, Vue Router, vue3-sfc-loader, html5-qrcode, and qr-code-generator so the app can run without a build step.

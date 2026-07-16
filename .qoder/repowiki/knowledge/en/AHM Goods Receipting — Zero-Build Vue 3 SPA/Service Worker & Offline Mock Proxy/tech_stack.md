@@ -1,0 +1,1 @@
+Plain Service Worker API (FetchEvent, Client.claim, skipWaiting) with no third-party libraries; mock data is hand-written fixtures shaped like the app's OData v4 response envelope.

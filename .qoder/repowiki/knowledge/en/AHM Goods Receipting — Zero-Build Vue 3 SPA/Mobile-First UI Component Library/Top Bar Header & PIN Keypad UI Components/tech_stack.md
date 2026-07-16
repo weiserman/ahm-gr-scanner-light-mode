@@ -1,0 +1,1 @@
+Vue 3 `<script setup>` SFCs using Composition API (`ref`, `computed`, `watch`, `nextTick`, `defineProps`, `defineEmits`, `defineExpose`); routing via `vue-router`'s `useRoute`.

@@ -1,0 +1,5 @@
+- Each script declares its own configuration block at the top (ADB path, APP_PACKAGE, target directories) instead of sourcing a shared config file.
+- Device iteration follows a two-phase pattern: when no `$1` is supplied, enumerate devices via `adb devices | grep device | cut -f1` and recursively re-invoke the same script with the device serial as argument.
+- File-change detection uses an associative array mapping relative paths to `stat -c %Y` timestamps, comparing current vs last-known mtime to distinguish new, modified, and deleted entries.
+- Post-sync operations always end with `adb shell am broadcast -a $APP_PACKAGE.ACTION_RELOAD_WEBVIEW` to notify the running WebView layer.
+- Sandbox writes go through `adb shell run-as $APP_PACKAGE ...` while staging writes target the public `/sdcard/Documents/MyHybridMobile` tree.

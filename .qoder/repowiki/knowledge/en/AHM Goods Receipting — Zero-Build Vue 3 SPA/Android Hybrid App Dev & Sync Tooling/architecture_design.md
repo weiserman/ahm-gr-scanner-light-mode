@@ -1,0 +1,8 @@
+Flat collection of independent shell scripts, each owning one lifecycle or workflow task:
+- `start.sh` / `stop.sh` — launch/kill the app package (`com.example.app`) on all connected devices (or a single `$1` device) using `adb monkey` and `am force-stop`; they recurse into themselves per-device.
+- `restart.sh` — thin orchestrator that calls `stop.sh` then `start.sh` via `$(dirname "$0")` so it works when invoked from any directory.
+- `push.sh` — one-shot sync: wipes `/sdcard/Documents/MyHybridMobile`, pushes root files + `src/public/dist` into the public workspace, copies them into the app sandbox via `run-as <pkg> cp -r`, then broadcasts `ACTION_RELOAD_WEBVIEW`.
+- `watch.sh` — long-running daemon that polls local files under `./` (pruning `node_modules/.git`), diffs timestamps against an associative array, and mirrors create/update/delete deltas to both the public workspace and the sandbox, followed by the same reload broadcast.
+- `zip.sh` — builds `zip/main.zip` over `./` (excluding `zip/* node_modules dist`), starts `darkhttpd` on port 8080, computes the host IP, renders a centered ANSI-UTF8 QR code via `qrencode`, and watches `./src` for changes to rebuild the zip in the background.
+- `chrome.sh` — convenience launcher for Chrome with `--disable-web-security` pointing at the local dev server.
+Dependency direction is strictly outward: scripts depend only on system tools (`adb`, `find`, `stat`, `zip`, `darkhttpd`, `qrencode`, `tput`) and never import each other except `restart.sh` calling sibling scripts by resolved path. All device targets are parameterized through constants (`APP_PACKAGE`, `TARGET_DIR`, `ADB`) rather than env vars.

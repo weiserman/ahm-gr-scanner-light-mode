@@ -1,1 +1,0 @@
-Vue 3.5.x (`vue.esm-browser.prod.js`) with Vue Router 4.x (`vue-router.global.prod.js`); QR scanning via `html5-qrcode` 2.3.8; QR matrix generation via `qr-code-generator` (dual CJS/ESM entry); SFC loading at runtime via `vue3-sfc-loader`; `petite-vue` present but not currently imported.

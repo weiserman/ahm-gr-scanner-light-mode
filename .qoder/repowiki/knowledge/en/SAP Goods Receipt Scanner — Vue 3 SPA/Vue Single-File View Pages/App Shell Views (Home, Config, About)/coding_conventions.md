@@ -1,4 +1,0 @@
-- Each view file follows a consistent SFC shape: a root `<div class="app-layout ...">` wrapping `<MenuTop>` plus a `<main class="app-content content-workspace">` body, with all styles scoped.
-- Navigation is performed exclusively through `<router-link>` or `useRouter().push('/route')` rather than programmatic URL manipulation.
-- Persistent data is never mutated directly; views call `storeActions.*` helpers (e.g. `saveODataConfig`, `resetStore`, `logout`, `clearCapturedReceiptItems`) exported from `../../util/store.js`.
-- Computed values derive UI counts from `store.cache.entityLists[...]` arrays instead of keeping local copies of business data.

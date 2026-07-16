@@ -1,1 +1,0 @@
-Scripts assume Windows-hosted ADB at `/mnt/c/usr/bin/adb.exe` and a device running package `com.example.app`; `watch.sh` requires `beep` and GNU `find`/`stat`; `zip.sh` needs `darkhttpd`, `qrencode`, and `tput` available in PATH.

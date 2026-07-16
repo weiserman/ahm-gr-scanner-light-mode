@@ -1,0 +1,4 @@
+- Components use `<script setup>` with `defineProps` / `defineEmits` and keep all logic inside the single-file component.
+- Global side-effects (window overrides, document/window event listeners) are registered in `onMounted` and torn down in `onBeforeUnmount`/`onUnmounted`.
+- Styling is scoped and driven by CSS custom properties for colors, spacing, and shadows rather than hard-coded values.
+- SVG icons are inline `<svg>` elements using `stroke="currentColor"` instead of external icon libraries.

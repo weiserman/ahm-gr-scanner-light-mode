@@ -1,0 +1,1 @@
+Two Vue 3 `<script setup>` components: a fixed top header with inline or popover navigation, and a mobile-first numeric keypad that auto-submits on reaching the configured length.

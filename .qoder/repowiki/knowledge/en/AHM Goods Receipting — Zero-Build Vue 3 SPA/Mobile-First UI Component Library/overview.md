@@ -1,0 +1,1 @@
+Collection of Vue 3 mobile-first components — dialog override, top bar, PIN keypad, QR generator/scanner, and floating refresh button — consumed by the AHM Goods Receipting app.

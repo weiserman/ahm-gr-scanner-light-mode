@@ -1,0 +1,1 @@
+Shared runtime utilities for the app: a Vue-reactive global store, an SAP S/4HANA OData v4 transport layer with CSRF/session handling, entity normalizers, and service-worker / barcode / keyboard helpers.

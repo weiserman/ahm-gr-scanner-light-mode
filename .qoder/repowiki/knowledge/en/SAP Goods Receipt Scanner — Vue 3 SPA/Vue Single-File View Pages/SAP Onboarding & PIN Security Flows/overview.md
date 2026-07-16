@@ -1,1 +1,0 @@
-Three-step onboarding screens that collect SAP credentials, let the user create or confirm a 4-digit PIN, and gate access behind PIN verification.

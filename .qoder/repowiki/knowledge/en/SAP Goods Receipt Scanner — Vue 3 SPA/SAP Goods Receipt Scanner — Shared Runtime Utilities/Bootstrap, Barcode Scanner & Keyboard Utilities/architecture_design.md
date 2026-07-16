@@ -1,6 +1,0 @@
-Four independent leaf utilities with no internal dependencies on each other:
-- `sfcBootstrap.js` is the entry point that bootstraps a runtime SFC loader: it injects Vue and Vue Router as globals, configures `vue3-sfc-loader` via `moduleCache`, `getFile`, `addStyle`, `pathResolve`, and a custom `handleModule` that recursively resolves `.js`/`.vue` imports (rewriting `from 'vue'` / `from 'vue-router'` to data URIs pointing at the globals), caches compiled modules in `customJsCache`, and returns `{ createApp, Main, router }` for the app shell.
-- `barcodeScanner.js` exposes two Vue `ref`s (`isGlobalScanningActive`, `isWebcamScannerOpen`) plus an `isUserEditing()` helper used by scanner loops to avoid stealing focus from real input fields; consumed by any component that needs scanner-global state.
-- `keyboard.js` registers a global `keydown` listener for Ctrl+R (despite the comment saying Alt+R) that calls `window.location.reload()`, exporting `register`/`unregister` hooks but also auto-invoking `register()` on import.
-- `dummy.json` is a static fixture of delivery/item records consumed by components needing seed data.
-The dependency direction is one-way: consumers import these files; they do not import each other.

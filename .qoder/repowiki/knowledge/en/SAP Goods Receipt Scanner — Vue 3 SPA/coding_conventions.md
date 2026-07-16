@@ -1,2 +1,0 @@
-- Runtime dependencies are consumed from `src/lib/vendor/` as pre-bundled ESM files rather than npm-installed packages, keeping the build self-contained.
-- Every HTML entry point declares a `<meta name="viewport">` and a `data:,` favicon to avoid extra requests inside the Android WebView.

@@ -1,1 +1,0 @@
-Plain ES modules with the native Service Worker API (`navigator.serviceWorker.register`, `.ready`, `.controller.postMessage`, `addEventListener('message')`); no third-party library.

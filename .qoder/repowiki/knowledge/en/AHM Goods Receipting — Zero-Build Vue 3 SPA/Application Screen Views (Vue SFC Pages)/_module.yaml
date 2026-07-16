@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: views
+title: Application Screen Views (Vue SFC Pages)
+scope:
+    - src/views/
+source_files: []
+depends_on: []
+related_to:
+    - path: components/menutop
+    - path: util

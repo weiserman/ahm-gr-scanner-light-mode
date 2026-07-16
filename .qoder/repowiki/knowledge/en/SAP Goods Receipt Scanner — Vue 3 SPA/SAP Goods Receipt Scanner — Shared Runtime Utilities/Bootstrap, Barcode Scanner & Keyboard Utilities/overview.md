@@ -1,1 +1,0 @@
-Runtime bootstrap for loading Vue SFCs and router at runtime, plus shared barcode-scanner state helpers and a dev-only Alt+R reload keyboard shortcut.

@@ -1,0 +1,3 @@
+- Runtime dependencies are imported from `lib_vendor/` rather than node_modules, keeping the app runnable without a build pipeline.
+- All cross-cutting state lives in the reactive global store under `util/store.js` instead of component-local state.
+- SAP S/4HANA calls go through the centralized OData v4 adapter in `util/odata.js` with CSRF/session handling abstracted away from views.

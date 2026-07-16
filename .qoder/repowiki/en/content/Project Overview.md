@@ -7,16 +7,18 @@
 - [vite.config.js](file://vite.config.js)
 - [index.html](file://index.html)
 - [src/main.js](file://src/main.js)
+- [src/Main.vue](file://src/Main.vue)
 - [src/router/index.js](file://src/router/index.js)
-- [src/components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
+- [src/util/serviceWorker/serviceWorker.js](file://src/util/serviceWorker/serviceWorker.js)
+- [public/sw.js](file://public/sw.js)
+- [src/util/odata.js](file://src/util/odata.js)
 - [src/util/barcodeScanner.js](file://src/util/barcodeScanner.js)
+- [src/components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
+- [src/views/home/index.vue](file://src/views/home/index.vue)
 - [src/views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [src/views/po_items/index.vue](file://src/views/po_items/index.vue)
 - [src/views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
 - [src/views/pinenter/index.vue](file://src/views/pinenter/index.vue)
 - [src/components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [src/util/serviceWorker/serviceWorker.js](file://src/util/serviceWorker/serviceWorker.js)
-- [public/sw.js](file://public/sw.js)
 </cite>
 
 ## Table of Contents
@@ -29,389 +31,322 @@
 7. [Performance Considerations](#performance-considerations)
 8. [Troubleshooting Guide](#troubleshooting-guide)
 9. [Conclusion](#conclusion)
-10. [Appendices](#appendices)
 
 ## Introduction
-ahm-gr-scanner is a mobile-first, web-based application designed for inventory management and goods tracking through barcode and QR code scanning. It provides real-time scanning capabilities, offline support via service workers, PIN-based authentication, and streamlined workflows for purchase order processing and delivery registration. The app targets modern browsers on mobile devices while remaining accessible from desktops for configuration and review tasks.
+AHM GR Scanner is a mobile-first progressive web app designed to streamline goods receipt operations in warehouse environments. It enables fast, reliable barcode scanning and end-to-end receipt workflows, including delivery registration and item-level processing, with strong offline support and PIN-based security for safe operation on shared devices.
+
+Target audience:
+- Warehouse workers performing receiving and put-away tasks
+- Inventory managers overseeing receipts and deliveries
+- Operations supervisors requiring auditability and control via PIN access
 
 Key features:
-- Real-time barcode/QR scanning using HTML5 camera access
-- Offline capability with caching and background sync patterns
-- PIN authentication to secure sensitive operations
-- Purchase order item processing and delivery registration flows
-- Lightweight Vue 3 components and modular utilities
+- Real-time barcode scanning using device cameras or integrated scanners
+- Goods receipt management with item-level visibility and actions
+- Delivery registration workflow to capture inbound shipments
+- PIN security system to protect sensitive operations
+- Offline capabilities through Service Workers for resilient field use
 
-The project leverages Vue 3 with Vite for fast development and optimized builds, and integrates HTML5-QRCode for robust scanning across devices.
+Technology stack highlights:
+- Vue 3 application with Vite build tooling
+- Service Worker integration for caching and offline behavior
+- OData client integration for backend communication
+- Modular components for QR/barcode scanning and UI dialogs
 
-[No sources needed since this section summarizes without analyzing specific files]
+Business context and benefits:
+- Reduces manual data entry errors by leveraging barcode capture
+- Accelerates receiving throughput with streamlined workflows
+- Improves operational resilience with offline-first design
+- Enhances security and accountability with PIN-gated access
+
+[No sources needed since this section provides general project overview]
 
 ## Project Structure
-The repository follows a feature-oriented layout under src/, with shared components, views, utilities, and router configuration. Build and runtime assets are organized under public/, scripts/, and root-level configuration files.
-
-Highlights:
-- src/components: Reusable UI elements (dialog, PIN entry, scanner, generator, refresh button)
-- src/views: Feature pages (goods scanning, PO items, delivery registration, PIN setup/entry)
-- src/util: Utilities for scanning, store, OData helpers, SFC bootstrap, and service worker integration
-- src/router: Client-side routing configuration
-- public: Service worker files and static assets
-- scripts: Development and deployment helper scripts
-- Root config: package.json, vite.config.js, index.html
+The repository follows a feature-oriented layout centered around Vue single-file components and utility modules:
+- src/views: Application screens (home, goods receipt, delivery registration, PIN entry)
+- src/components: Reusable UI elements (dialogs, PIN pad, QR/barcode scanner)
+- src/util: Core utilities (OData client, barcode scanner, Service Worker helpers, store)
+- public: Static assets including the production Service Worker
+- scripts: Build and deployment helpers
+- vite.config.js: Vite configuration for development and production builds
 
 ```mermaid
 graph TB
 A["index.html"] --> B["src/main.js"]
-B --> C["src/router/index.js"]
-C --> D["src/views/goods_to_scan/index.vue"]
-C --> E["src/views/po_items/index.vue"]
-C --> F["src/views/register_delivery/index.vue"]
-C --> G["src/views/pinenter/index.vue"]
-B --> H["src/components/qrcode/scanner/index.vue"]
-H --> I["src/util/barcodeScanner.js"]
-B --> J["src/util/serviceWorker/serviceWorker.js"]
-J --> K["public/sw.js"]
+B --> C["src/Main.vue"]
+C --> D["src/router/index.js"]
+D --> E["src/views/home/index.vue"]
+D --> F["src/views/goods_to_scan/index.vue"]
+D --> G["src/views/register_delivery/index.vue"]
+D --> H["src/views/pinenter/index.vue"]
+C --> I["src/components/qrcode/scanner/index.vue"]
+C --> J["src/components/pinmobile/PinMobile.vue"]
+C --> K["src/util/odata.js"]
+C --> L["src/util/barcodeScanner.js"]
+C --> M["src/util/serviceWorker/serviceWorker.js"]
+M --> N["public/sw.js"]
 ```
 
 **Diagram sources**
-- [index.html:1-200](file://index.html#L1-L200)
-- [src/main.js:1-200](file://src/main.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [index.html:1-20](file://index.html#L1-L20)
+- [src/main.js:1-40](file://src/main.js#L1-L40)
+- [src/Main.vue:1-60](file://src/Main.vue#L1-L60)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
+- [src/views/home/index.vue:1-30](file://src/views/home/index.vue#L1-L30)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
+- [src/views/register_delivery/index.vue:1-30](file://src/views/register_delivery/index.vue#L1-L30)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/components/pinmobile/PinMobile.vue:1-30](file://src/components/pinmobile/PinMobile.vue#L1-L30)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/barcodeScanner.js:1-40](file://src/util/barcodeScanner.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
+- [public/sw.js:1-40](file://public/sw.js#L1-L40)
 
 **Section sources**
-- [README.md:1-200](file://README.md#L1-L200)
-- [package.json:1-200](file://package.json#L1-L200)
-- [vite.config.js:1-200](file://vite.config.js#L1-L200)
-- [index.html:1-200](file://index.html#L1-L200)
-- [src/main.js:1-200](file://src/main.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
+- [README.md:1-40](file://README.md#L1-L40)
+- [package.json:1-40](file://package.json#L1-L40)
+- [vite.config.js:1-40](file://vite.config.js#L1-L40)
+- [index.html:1-20](file://index.html#L1-L20)
+- [src/main.js:1-40](file://src/main.js#L1-L40)
+- [src/Main.vue:1-60](file://src/Main.vue#L1-L60)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
 
 ## Core Components
-This section outlines the primary building blocks that enable scanning, navigation, security, and data workflows.
+- Main application shell: Initializes routing and global state, mounts the root component, and wires up navigation between views.
+- Router: Defines routes for home, goods receipt, delivery registration, and PIN entry flows.
+- Views:
+  - Home: Entry point and quick actions to start scanning or manage receipts.
+  - Goods to scan: Item-level receipt operations, list management, and status tracking.
+  - Register delivery: Capture delivery metadata and link to subsequent receipt items.
+  - PIN entry: Secure access gate for sensitive operations.
+- Components:
+  - QR/Barcode scanner: Camera-based scanning interface used across receipt flows.
+  - PIN pad: Mobile-friendly numeric input for PIN verification.
+- Utilities:
+  - OData client: Encapsulates HTTP requests and response handling for backend services.
+  - Barcode scanner helper: Abstraction over camera and scanner inputs.
+  - Service Worker helpers: Registration and lifecycle management for offline caching.
 
-- Scanner component
-  - Provides camera-based scanning for barcodes and QR codes
-  - Integrates with HTML5-QRCode library for cross-device compatibility
-  - Emits scan results to parent views for further processing
-
-- Barcode utility
-  - Encapsulates scanning lifecycle and error handling
-  - Normalizes scan events and formats results for consistent consumption
-
-- Views
-  - Goods-to-scan: orchestrates scanning flow and displays scanned items
-  - PO items: manages purchase order line items and related actions
-  - Register delivery: guides users through delivery registration steps
-  - PIN entry/setup: secures user sessions and enforces PIN policies
-
-- Service Worker integration
-  - Enables offline caching and background operations
-  - Improves reliability in low-connectivity environments
-
-- Router
-  - Defines routes for each view and guards sensitive flows with PIN checks
+Operational benefits:
+- Streamlined receiving process reduces cycle time and errors
+- PIN security ensures only authorized personnel can perform critical actions
+- Offline-first design supports continuous operations in low-connectivity areas
 
 **Section sources**
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-- [src/components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
+- [src/Main.vue:1-60](file://src/Main.vue#L1-L60)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
+- [src/views/home/index.vue:1-30](file://src/views/home/index.vue#L1-L30)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
+- [src/views/register_delivery/index.vue:1-30](file://src/views/register_delivery/index.vue#L1-L30)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/components/pinmobile/PinMobile.vue:1-30](file://src/components/pinmobile/PinMobile.vue#L1-L30)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/barcodeScanner.js:1-40](file://src/util/barcodeScanner.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
 
 ## Architecture Overview
-The application follows a client-side architecture with Vue 3 as the UI framework, Vite for build tooling, and HTML5-QRCode for scanning. Routing directs users to feature-specific views, which compose reusable components and call utilities for scanning and data operations. Service workers provide offline caching and resilience.
+High-level architecture shows how the PWA layers interact:
+- Presentation layer: Vue components and views render the UI and handle user interactions.
+- Navigation layer: Router manages screen transitions and guards for PIN-protected flows.
+- Data layer: OData client communicates with backend services; local state persists during sessions.
+- Offline layer: Service Worker caches static assets and API responses to enable offline usage.
 
 ```mermaid
 graph TB
-subgraph "Browser"
-UI["Vue 3 App<br/>Views & Components"]
-Router["Client Router"]
+subgraph "Presentation"
+VHome["Views: Home"]
+VGR["Views: Goods Receipt"]
+VReg["Views: Register Delivery"]
+VPIN["Views: PIN Entry"]
+CompScan["Component: QR/Barcode Scanner"]
+CompPIN["Component: PIN Pad"]
+end
+subgraph "Navigation"
+Router["Router"]
+end
+subgraph "Data"
+OData["OData Client"]
+Store["Local State"]
+end
+subgraph "Offline"
+SWHelper["Service Worker Helper"]
 SW["Service Worker"]
 end
-subgraph "Scanning"
-ScannerComp["Scanner Component"]
-ScannerUtil["Barcode Utility"]
-HTML5QRC["HTML5-QRCode"]
-end
-subgraph "Security"
-PINEntry["PIN Entry / Setup"]
-end
-subgraph "Features"
-GoodsScan["Goods To Scan"]
-POItems["PO Items"]
-DeliveryReg["Register Delivery"]
-end
-UI --> Router
-Router --> GoodsScan
-Router --> POItems
-Router --> DeliveryReg
-GoodsScan --> ScannerComp
-ScannerComp --> ScannerUtil
-ScannerUtil --> HTML5QRC
-UI --> PINEntry
-UI --> SW
+VHome --> Router
+VGR --> Router
+VReg --> Router
+VPIN --> Router
+VGR --> CompScan
+VPIN --> CompPIN
+VGR --> OData
+VReg --> OData
+OData --> Store
+SWHelper --> SW
+Router --> SWHelper
 ```
 
 **Diagram sources**
-- [src/main.js:1-200](file://src/main.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
+- [src/views/home/index.vue:1-30](file://src/views/home/index.vue#L1-L30)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
+- [src/views/register_delivery/index.vue:1-30](file://src/views/register_delivery/index.vue#L1-L30)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/components/pinmobile/PinMobile.vue:1-30](file://src/components/pinmobile/PinMobile.vue#L1-L30)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
+- [public/sw.js:1-40](file://public/sw.js#L1-L40)
 
 ## Detailed Component Analysis
 
-### Scanning Flow
-The scanning workflow starts when a user navigates to the goods-to-scan view. The scanner component initializes the camera, decodes frames using HTML5-QRCode, and emits results to the view for processing.
+### Goods Receipt Flow
+This sequence illustrates the typical goods receipt interaction from scanning to submission:
 
 ```mermaid
 sequenceDiagram
-participant User as "User"
+participant User as "Warehouse Worker"
 participant View as "Goods To Scan View"
-participant Comp as "Scanner Component"
-participant Util as "Barcode Utility"
-participant Lib as "HTML5-QRCode"
-User->>View : Open "Goods To Scan"
-View->>Comp : Start scanning
-Comp->>Util : Initialize scanner
-Util->>Lib : Request camera permissions
-Lib-->>Util : Stream frames
-Util-->>Comp : Emit decoded result
-Comp-->>View : On scan success
-View->>View : Update scanned list / proceed to next step
+participant Router as "Router"
+participant PIN as "PIN Entry View"
+participant Scan as "QR/Barcode Scanner"
+participant OData as "OData Client"
+participant SW as "Service Worker"
+User->>View : Open Goods Receipt
+View->>Router : Navigate to Goods To Scan
+View->>Scan : Start scanning
+Scan-->>View : Barcode result
+View->>PIN : Request PIN verification
+PIN-->>View : PIN verified
+View->>OData : Submit receipt item
+OData->>SW : Cache request/response
+SW-->>OData : Network fallback if offline
+OData-->>View : Operation result
+View-->>User : Confirmation and next steps
 ```
 
 **Diagram sources**
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
+- [public/sw.js:1-40](file://public/sw.js#L1-L40)
 
-**Section sources**
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-
-### PIN Authentication Flow
-Sensitive operations require PIN verification. The PIN entry view validates input against stored credentials and grants access to protected routes or actions.
+### PIN Security Gate
+The PIN flow protects sensitive operations by gating access until valid credentials are provided:
 
 ```mermaid
 flowchart TD
-Start(["Open Protected Feature"]) --> CheckPIN["Check if PIN is set"]
-CheckPIN --> |Not Set| SetupPIN["Redirect to PIN Setup"]
-CheckPIN --> |Set| PromptPIN["Prompt for PIN"]
-PromptPIN --> Validate{"PIN Valid?"}
-Validate --> |Yes| GrantAccess["Grant Access"]
-Validate --> |No| ShowError["Show Error Message"]
-ShowError --> PromptPIN
-GrantAccess --> End(["Proceed to Feature"])
+Start(["Open Protected Feature"]) --> CheckPIN["Check PIN Status"]
+CheckPIN --> HasPIN{"PIN Verified?"}
+HasPIN --> |Yes| Proceed["Proceed to Feature"]
+HasPIN --> |No| ShowPIN["Show PIN Entry View"]
+ShowPIN --> InputPIN["User Enters PIN"]
+InputPIN --> ValidatePIN["Validate PIN"]
+ValidatePIN --> Valid{"Valid?"}
+Valid --> |Yes| SetPIN["Set PIN Verified"]
+Valid --> |No| Retry["Prompt Again"]
+Retry --> InputPIN
+SetPIN --> Proceed
+Proceed --> End(["Feature Access Granted"])
 ```
 
 **Diagram sources**
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-- [src/components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/pinmobile/PinMobile.vue:1-30](file://src/components/pinmobile/PinMobile.vue#L1-L30)
 
-**Section sources**
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-- [src/components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
-
-### Purchase Order Processing
-The PO items view allows users to manage purchase order lines, validate entries, and coordinate with scanning results.
+### Barcode Scanning Integration
+Scanning integrates with device cameras and external scanners, feeding results into receipt workflows:
 
 ```mermaid
-sequenceDiagram
-participant User as "User"
-participant View as "PO Items View"
-participant Store as "Local Store"
-participant API as "Backend (if applicable)"
-User->>View : Load PO details
-View->>Store : Fetch cached PO items
-alt Online
-View->>API : Sync latest PO items
-API-->>View : Updated items
-View->>Store : Persist updated items
-else Offline
-View->>Store : Use cached items
-end
-User->>View : Add/Update PO line items
-View->>Store : Save changes locally
+classDiagram
+class BarcodeScanner {
++start()
++stop()
++onResult(callback)
++getError()
+}
+class QRScannerComponent {
++mounted()
++unmounted()
++handleScan(data)
+}
+class GoodsReceiptView {
++addItem(code)
++validateItem(code)
++submitBatch()
+}
+BarcodeScanner <.. QRScannerComponent : "used by"
+QRScannerComponent --> GoodsReceiptView : "emits scanned codes"
 ```
 
 **Diagram sources**
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [src/util/barcodeScanner.js:1-40](file://src/util/barcodeScanner.js#L1-L40)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
 
 **Section sources**
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/util/store.js:1-200](file://src/util/store.js#L1-L200)
-
-### Delivery Registration
-The register delivery view guides users through capturing required information and associating it with scanned goods.
-
-```mermaid
-flowchart TD
-Start(["Start Delivery Registration"]) --> CollectInfo["Collect Delivery Info"]
-CollectInfo --> LinkGoods["Link Scanned Goods"]
-LinkGoods --> Validate["Validate Data"]
-Validate --> |Valid| Submit["Submit Delivery Record"]
-Validate --> |Invalid| FixErrors["Fix Errors and Retry"]
-Submit --> Confirm["Confirm Success"]
-Confirm --> End(["Complete"])
-```
-
-**Diagram sources**
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-
-**Section sources**
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [src/views/goods_to_scan/index.vue:1-30](file://src/views/goods_to_scan/index.vue#L1-L30)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
+- [src/components/qrcode/scanner/index.vue:1-30](file://src/components/qrcode/scanner/index.vue#L1-L30)
+- [src/components/pinmobile/PinMobile.vue:1-30](file://src/components/pinmobile/PinMobile.vue#L1-L30)
+- [src/util/barcodeScanner.js:1-40](file://src/util/barcodeScanner.js#L1-L40)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
+- [public/sw.js:1-40](file://public/sw.js#L1-L40)
 
 ## Dependency Analysis
-The project uses a minimal dependency set focused on performance and mobile usability. Key dependencies include Vue 3 for reactive UI, Vite for fast builds, and HTML5-QRCode for scanning. Service workers are configured for offline support.
+Build and runtime dependencies include Vue 3, Vite, and Service Worker APIs. The router coordinates view dependencies, while utilities encapsulate external integrations (OData, barcode scanning).
 
 ```mermaid
-graph TB
-Pkg["package.json"]
-Vite["vite.config.js"]
-Main["src/main.js"]
-Router["src/router/index.js"]
-Scanner["src/components/qrcode/scanner/index.vue"]
-Util["src/util/barcodeScanner.js"]
-SW["src/util/serviceWorker/serviceWorker.js"]
-PublicSW["public/sw.js"]
-Pkg --> Main
-Pkg --> Vite
-Main --> Router
-Main --> Scanner
-Scanner --> Util
-Main --> SW
-SW --> PublicSW
+graph LR
+Pkg["package.json"] --> Vite["Vite Config"]
+Vite --> App["Vue 3 App"]
+App --> Router["Router"]
+App --> Utils["Utilities"]
+Utils --> OData["OData Client"]
+Utils --> Scanner["Barcode Scanner"]
+App --> SW["Service Worker"]
 ```
 
 **Diagram sources**
-- [package.json:1-200](file://package.json#L1-L200)
-- [vite.config.js:1-200](file://vite.config.js#L1-L200)
-- [src/main.js:1-200](file://src/main.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
-- [src/components/qrcode/scanner/index.vue:1-200](file://src/components/qrcode/scanner/index.vue#L1-L200)
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [package.json:1-40](file://package.json#L1-L40)
+- [vite.config.js:1-40](file://vite.config.js#L1-L40)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/util/barcodeScanner.js:1-40](file://src/util/barcodeScanner.js#L1-L40)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
 
 **Section sources**
-- [package.json:1-200](file://package.json#L1-L200)
-- [vite.config.js:1-200](file://vite.config.js#L1-L200)
-- [src/main.js:1-200](file://src/main.js#L1-L200)
-- [src/router/index.js:1-200](file://src/router/index.js#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [package.json:1-40](file://package.json#L1-L40)
+- [vite.config.js:1-40](file://vite.config.js#L1-L40)
+- [src/router/index.js:1-40](file://src/router/index.js#L1-L40)
 
 ## Performance Considerations
-- Prefer lazy loading of heavy components and views to reduce initial bundle size
-- Optimize camera usage by stopping streams when not in use
-- Cache frequently accessed data locally and implement efficient diffing strategies
-- Keep service worker cache sizes reasonable and implement cache invalidation policies
-- Minimize re-renders by leveraging Vue’s reactivity efficiently and avoiding unnecessary state updates
+- Prefer lazy loading of heavy components (e.g., scanner) to reduce initial bundle size.
+- Cache frequently accessed reference data via Service Worker to minimize network calls.
+- Debounce rapid scans to avoid overwhelming the UI thread.
+- Batch OData submissions when possible to reduce round trips.
+- Monitor memory usage on long-running sessions and reset scanner state appropriately.
 
 [No sources needed since this section provides general guidance]
 
 ## Troubleshooting Guide
 Common issues and resolutions:
-- Camera permission denied
-  - Ensure HTTPS context and explicit user gesture to start scanning
-  - Verify browser permissions and retry after granting access
-- No scans detected
-  - Improve lighting and focus; ensure scannable content fills the frame
-  - Check device compatibility and update browser
-- Offline mode not working
-  - Confirm service worker registration and cache strategy
-  - Clear caches and reinstall if necessary
-- PIN errors
-  - Reset PIN via setup flow if locked out
-  - Validate PIN policy constraints and retry
+- Service Worker not updating: Clear cache and force reload; verify registration path and versioning.
+- Camera permissions denied: Prompt users to allow camera access; provide fallback to manual code entry.
+- OData connectivity failures: Implement retry logic and offline queueing; log detailed error contexts.
+- PIN validation loops: Ensure PIN state is persisted correctly and cleared on logout.
 
 **Section sources**
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [src/util/serviceWorker/serviceWorker.js:1-40](file://src/util/serviceWorker/serviceWorker.js#L1-L40)
+- [public/sw.js:1-40](file://public/sw.js#L1-L40)
+- [src/util/odata.js:1-40](file://src/util/odata.js#L1-L40)
+- [src/views/pinenter/index.vue:1-30](file://src/views/pinenter/index.vue#L1-L30)
 
 ## Conclusion
-ahm-gr-scanner delivers a focused, mobile-first experience for inventory and goods tracking with real-time scanning, offline resilience, and secure workflows. Its lightweight architecture and clear separation of concerns make it easy to extend and maintain. By following the installation and usage guidance below, teams can quickly deploy and operate the application in production environments.
+AHM GR Scanner delivers a robust, mobile-first PWA tailored for warehouse goods receipt operations. Its modular Vue 3 architecture, integrated barcode scanning, secure PIN access, and offline-ready Service Worker foundation provide a resilient platform that improves accuracy, speed, and reliability in receiving workflows.
 
 [No sources needed since this section summarizes without analyzing specific files]
-
-## Appendices
-
-### Installation Instructions
-- Prerequisites
-  - Node.js LTS recommended
-  - Modern browser with HTTPS support for camera access
-- Steps
-  - Clone the repository
-  - Install dependencies using the package manager defined in package.json
-  - Start the development server using the provided script or Vite command
-  - Open the local URL in your browser and grant camera permissions when prompted
-
-**Section sources**
-- [README.md:1-200](file://README.md#L1-L200)
-- [package.json:1-200](file://package.json#L1-L200)
-- [scripts/start.sh:1-200](file://scripts/start.sh#L1-L200)
-
-### Quick Start Guide
-- Launch the app and navigate to “Goods To Scan”
-- Allow camera access and point the device at a barcode or QR code
-- Review scanned items and proceed to purchase order or delivery registration
-- If required, set up or enter your PIN to access protected features
-
-**Section sources**
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-- [src/views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
-
-### Basic Usage Examples
-- Scanning a product
-  - Open the goods-to-scan view and initiate scanning
-  - When a code is detected, the item appears in the scanned list
-- Adding a purchase order item
-  - Navigate to PO items and add or edit line entries
-  - Associate scanned goods where applicable
-- Registering a delivery
-  - Fill in delivery details and link scanned goods
-  - Submit the record and confirm completion
-
-**Section sources**
-- [src/views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
-- [src/views/po_items/index.vue:1-200](file://src/views/po_items/index.vue#L1-L200)
-- [src/views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
-
-### System Requirements and Browser Compatibility
-- Operating systems
-  - iOS Safari (latest stable)
-  - Android Chrome (latest stable)
-  - Desktop Chrome/Firefox/Edge for configuration and review
-- Network
-  - HTTPS required for camera access and service worker registration
-- Features
-  - MediaDevices API for camera access
-  - Web Storage and Cache APIs for offline support
-
-**Section sources**
-- [src/util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
-- [src/util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
-- [public/sw.js:1-200](file://public/sw.js#L1-L200)

@@ -1,0 +1,2 @@
+- Vendor libraries are imported through stable relative paths under `src/lib/<package>/<entry>` rather than node_modules, keeping the repo self-contained and build-step-free.
+- Global-IIFE libraries (vue-router, html5-qrcode) are loaded by injecting a `<script>` tag and accessed via a well-known `window.*` handle instead of being imported as ES modules.

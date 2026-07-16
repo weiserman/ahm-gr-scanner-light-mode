@@ -1,0 +1,1 @@
+Top-level Vue single-file components that render each application screen — home dashboard, PIN lock/setup, delivery registration, goods scanning, and configuration pages.

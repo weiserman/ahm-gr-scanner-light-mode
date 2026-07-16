@@ -2,23 +2,29 @@
 
 <cite>
 **Referenced Files in This Document**
+- [README.md](file://README.md)
+- [index.html](file://index.html)
 - [main.js](file://src/main.js)
 - [Main.vue](file://src/Main.vue)
 - [router/index.js](file://src/router/index.js)
 - [util/store.js](file://src/util/store.js)
+- [util/entities.js](file://src/util/entities.js)
 - [util/odata.js](file://src/util/odata.js)
 - [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
+- [util/serviceWorker/serviceWorker.js](file://src/util/serviceWorker/serviceWorker.js)
+- [components/dialog/useDialog.js](file://src/components/dialog/useDialog.js)
 - [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
+- [views/home/index.vue](file://src/views/home/index.vue)
 - [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
 - [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
 - [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
+- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
 - [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
+- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
+- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
+- [views/enroll/index.vue](file://src/views/enroll/index.vue)
 - [views/config/index.vue](file://src/views/config/index.vue)
+- [public/sw.js](file://public/sw.js)
 </cite>
 
 ## Table of Contents
@@ -33,530 +39,508 @@
 9. [Conclusion](#conclusion)
 
 ## Introduction
-This document explains the core features of the ahm-gr-scanner application, focusing on:
-- PIN authentication system for secure access and session control
-- QR/barcode scanning module for item identification
-- Inventory management views for scanned goods and delivery registration
-- Purchase order processing flows
-- Goods registration workflows from scan to receipt
-It also covers user interaction patterns, data flow between modules, configuration options, error handling strategies, and user feedback mechanisms. Practical examples illustrate how these features work together to support inventory operations.
+This document explains the core features of the AHM GR Scanner, focusing on barcode scanning, goods receipt management, delivery registration, PIN security, and offline capabilities. It describes user workflows, business logic, technical implementation, integration points, data models, state management, error handling, validation rules, and user feedback mechanisms. The goal is to make the system understandable for both technical and non-technical users involved in warehouse operations.
 
 ## Project Structure
-The application is a Vue-based web app with modular views and reusable components. Key areas include:
-- Application bootstrap and routing
-- Global state store
-- Utility services for OData integration and barcode scanning
-- Feature-specific views (PIN entry/setup, scanning, goods, purchase orders, config)
-- Reusable UI components (PIN pad, dialog, scanner)
+The application is a Vue-based single-page app with:
+- Views for each feature (home, scanning, receipts, deliveries, PIN entry/setup, outbox).
+- Shared utilities for store, entities, OData client, barcode scanning, and service worker.
+- Reusable components for dialogs and PIN input.
+- Routing configuration that ties views together.
 
 ```mermaid
 graph TB
-A["src/main.js"] --> B["src/Main.vue"]
-B --> C["src/router/index.js"]
-C --> D["Views<br/>pinenter, pinsetup, goods_to_scan,<br/>scanned_goods, register_delivery,<br/>receipt_item, outbox_item, po_items, config"]
-B --> E["Components<br/>PinMobile, qrcode/scanner"]
-B --> F["Utilities<br/>store.js, odata.js, barcodeScanner.js"]
+A["index.html"] --> B["main.js"]
+B --> C["Main.vue"]
+C --> D["router/index.js"]
+D --> E["views/home/index.vue"]
+D --> F["views/goods_to_scan/index.vue"]
+D --> G["views/scanned_goods/index.vue"]
+D --> H["views/receipt_item/index.vue"]
+D --> I["views/register_delivery/index.vue"]
+D --> J["views/outbox_item/index.vue"]
+D --> K["views/pinenter/index.vue"]
+D --> L["views/pinsetup/index.vue"]
+D --> M["views/enroll/index.vue"]
+D --> N["views/config/index.vue"]
+C --> O["util/store.js"]
+C --> P["util/entities.js"]
+C --> Q["util/odata.js"]
+C --> R["util/barcodeScanner.js"]
+C --> S["util/serviceWorker/serviceWorker.js"]
+C --> T["components/dialog/useDialog.js"]
+C --> U["components/pinmobile/PinMobile.vue"]
+A --> V["public/sw.js"]
 ```
 
 **Diagram sources**
-- [main.js](file://src/main.js)
-- [Main.vue](file://src/Main.vue)
-- [router/index.js](file://src/router/index.js)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
-- [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
-- [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
-- [views/config/index.vue](file://src/views/config/index.vue)
+- [index.html:1-200](file://index.html#L1-L200)
+- [main.js:1-200](file://src/main.js#L1-L200)
+- [Main.vue:1-200](file://src/Main.vue#L1-L200)
+- [router/index.js:1-200](file://src/router/index.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
+- [views/home/index.vue:1-200](file://src/views/home/index.vue#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/scanned_goods/index.vue:1-200](file://src/views/scanned_goods/index.vue#L1-L200)
+- [views/receipt_item/index.vue:1-200](file://src/views/receipt_item/index.vue#L1-L200)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [views/outbox_item/index.vue:1-200](file://src/views/outbox_item/index.vue#L1-L200)
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [views/pinsetup/index.vue:1-200](file://src/views/pinsetup/index.vue#L1-L200)
+- [views/enroll/index.vue:1-200](file://src/views/enroll/index.vue#L1-L200)
+- [views/config/index.vue:1-200](file://src/views/config/index.vue#L1-L200)
+- [public/sw.js:1-200](file://public/sw.js#L1-L200)
 
 **Section sources**
-- [main.js](file://src/main.js)
-- [Main.vue](file://src/Main.vue)
-- [router/index.js](file://src/router/index.js)
+- [README.md:1-200](file://README.md#L1-L200)
+- [index.html:1-200](file://index.html#L1-L200)
+- [main.js:1-200](file://src/main.js#L1-L200)
+- [Main.vue:1-200](file://src/Main.vue#L1-L200)
+- [router/index.js:1-200](file://src/router/index.js#L1-L200)
 
 ## Core Components
-- Application shell and routing: The main entry initializes the app and sets up routes for feature views.
-- Global store: Centralized state for settings, current user/session, pending scans, and outbound queue.
-- OData service: Encapsulates HTTP requests to backend services for entities like items, receipts, and purchase orders.
-- Barcode scanner utility: Wraps camera and decoding logic for QR/barcode capture.
-- PIN mobile component: Reusable PIN pad used across PIN entry and setup screens.
-- Scanner component: Camera-based QR/barcode scanner view component.
+- Store: Centralized reactive state for scanned items, receipts, deliveries, PIN status, and outbox queue.
+- Entities: Data model definitions used across views and services.
+- OData Client: HTTP communication layer for backend synchronization.
+- Barcode Scanner: Utility to capture barcodes from camera or hardware scanner.
+- Service Worker: Offline caching and background sync support.
+- Dialogs: Reusable confirmation/info prompts.
+- PIN Mobile: PIN pad component for secure access.
 
 Key responsibilities:
-- Authentication gating via PIN
-- Scanning input normalization and validation
-- Data synchronization with backend via OData
-- Local persistence for offline or retry scenarios
-- User feedback through dialogs and status messages
+- State persistence and cross-view consistency via the store.
+- Validation and transformation of entity data before sending to backend.
+- Robust error handling and retry strategies for network calls.
+- Offline-first behavior with queued operations and eventual consistency.
 
 **Section sources**
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
 
 ## Architecture Overview
-High-level architecture shows how views interact with shared utilities and components to implement end-to-end workflows.
+The app follows an offline-first architecture:
+- Views render UI and orchestrate actions.
+- Store holds application state and persists it locally.
+- Utilities provide domain-specific functionality (scanning, OData, SW).
+- Service Worker caches assets and supports background sync when online.
 
 ```mermaid
-graph TB
-subgraph "UI Layer"
-V1["pinenter/index.vue"]
-V2["pinsetup/index.vue"]
-V3["goods_to_scan/index.vue"]
-V4["scanned_goods/index.vue"]
-V5["register_delivery/index.vue"]
-V6["receipt_item/index.vue"]
-V7["outbox_item/index.vue"]
-V8["po_items/index.vue"]
-V9["config/index.vue"]
-C1["PinMobile.vue"]
-C2["qrcode/scanner/index.vue"]
+sequenceDiagram
+participant User as "User"
+participant View as "Goods To Scan View"
+participant Store as "Store"
+participant Scanner as "Barcode Scanner"
+participant OData as "OData Client"
+participant SW as "Service Worker"
+User->>View : Open Goods Receipt screen
+View->>Store : Initialize state
+User->>Scanner : Scan barcode
+Scanner-->>View : Barcode value
+View->>Store : Add item to current receipt
+View->>OData : Fetch PO details (if needed)
+OData-->>View : PO items
+View->>Store : Update receipt items
+User->>View : Submit receipt
+alt Online
+View->>OData : POST receipt
+OData-->>View : Success
+View->>Store : Clear receipt
+else Offline
+View->>Store : Queue receipt in outbox
+View->>SW : Register background sync
+SW-->>View : Sync later
 end
-subgraph "Shared Services"
-S1["store.js"]
-S2["odata.js"]
-S3["barcodeScanner.js"]
-end
-V1 --> C1
-V2 --> C1
-V3 --> C2
-V4 --> S1
-V5 --> S1
-V6 --> S1
-V7 --> S1
-V8 --> S1
-V9 --> S1
-V3 --> S3
-V4 --> S2
-V5 --> S2
-V6 --> S2
-V7 --> S2
-V8 --> S2
-V9 --> S2
-S1 --> S2
 ```
 
 **Diagram sources**
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
-- [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
-- [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
-- [views/config/index.vue](file://src/views/config/index.vue)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [public/sw.js:1-200](file://public/sw.js#L1-L200)
 
 ## Detailed Component Analysis
 
-### PIN Authentication System
-Purpose:
-- Enforce PIN-based access control
-- Allow initial PIN setup and change
-- Maintain session state and guard protected routes
+### Barcode Scanning System
+User workflow:
+- Navigate to Goods To Scan view.
+- Start camera or use hardware scanner.
+- On successful scan, add item to current receipt.
+- Review scanned list and proceed to submit.
 
-User interactions:
-- Enter PIN on first launch or when session expires
-- Set or change PIN during setup
-- Receive immediate feedback for invalid attempts and success
+Business logic:
+- Validate scanned values against expected formats.
+- Deduplicate scans within the same session.
+- Enforce quantity limits per PO line if applicable.
 
-Data flow:
-- PinMobile component emits typed digits
-- PIN entry view validates against stored PIN
-- Store updates session state and navigates to home or setup
+Technical implementation:
+- Barcode utility abstracts camera/hardware input.
+- View listens to scan events and updates store.
+- Errors are surfaced via dialog prompts.
 
-Error handling:
-- Invalid PIN prompts re-entry
-- Locked-out behavior after repeated failures (if implemented)
-- Clear messages guide users
+```mermaid
+flowchart TD
+Start(["Start Scan"]) --> Init["Initialize Scanner"]
+Init --> Capture["Capture Input"]
+Capture --> Valid{"Valid Format?"}
+Valid --> |No| ShowError["Show Error Dialog"]
+ShowError --> Capture
+Valid --> |Yes| Dedup{"Duplicate?"}
+Dedup --> |Yes| NotifyDup["Notify Duplicate"]
+Dedup --> |No| AddItem["Add to Current Receipt"]
+AddItem --> Confirm["Confirm Addition"]
+Confirm --> End(["Ready for Next Scan"])
+```
+
+**Diagram sources**
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+
+**Section sources**
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+
+### Goods Receipt Management
+User workflow:
+- Select or create a receipt.
+- Add items by scanning or manual entry.
+- Review totals and discrepancies.
+- Submit receipt; if offline, queue for later sync.
+
+Business logic:
+- Maintain receipt state in store.
+- Validate quantities and unit-of-measure conversions.
+- Compute totals and flag exceptions.
+
+Technical implementation:
+- Store manages receipt lifecycle and persistence.
+- OData client handles GET/POST operations.
+- Outbox queue stores pending receipts until sync succeeds.
+
+```mermaid
+classDiagram
+class Receipt {
++string id
++string poNumber
++array items
++number totalQty
++boolean submitted
+}
+class Item {
++string materialCode
++number qty
++string uom
++boolean scanned
+}
+class Store {
++Receipt currentReceipt
++array outbox
++addScannedItem(item)
++submitReceipt()
++clearReceipt()
+}
+Store --> Receipt : "manages"
+Receipt --> Item : "contains"
+```
+
+**Diagram sources**
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/receipt_item/index.vue:1-200](file://src/views/receipt_item/index.vue#L1-L200)
+
+**Section sources**
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/receipt_item/index.vue:1-200](file://src/views/receipt_item/index.vue#L1-L200)
+
+### Delivery Registration
+User workflow:
+- Enter delivery details (e.g., carrier, reference).
+- Attach one or more receipts to the delivery.
+- Submit delivery; if offline, queue for later sync.
+
+Business logic:
+- Validate delivery fields and required attachments.
+- Ensure receipts are finalized before attaching.
+- Track delivery status and sync results.
+
+Technical implementation:
+- Delivery creation uses OData client.
+- Store maintains delivery draft and submission state.
+- Outbox queue ensures eventual consistency.
 
 ```mermaid
 sequenceDiagram
-participant U as "User"
-participant P as "PinMobile.vue"
-participant E as "pinenter/index.vue"
-participant ST as "store.js"
-participant R as "router/index.js"
-U->>P : "Enter digits"
-P-->>E : "Emits PIN value"
-E->>ST : "Validate PIN"
-ST-->>E : "Result (valid/invalid)"
-alt "Valid"
-E->>R : "Navigate to Home"
-else "Invalid"
-E->>U : "Show error and prompt again"
+participant User as "User"
+participant View as "Register Delivery View"
+participant Store as "Store"
+participant OData as "OData Client"
+participant SW as "Service Worker"
+User->>View : Fill delivery form
+View->>Store : Save draft
+User->>View : Attach receipts
+View->>Store : Link receipts to delivery
+User->>View : Submit delivery
+alt Online
+View->>OData : POST delivery
+OData-->>View : Success
+View->>Store : Clear draft
+else Offline
+View->>Store : Queue delivery in outbox
+View->>SW : Schedule background sync
 end
 ```
 
 **Diagram sources**
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [router/index.js](file://src/router/index.js)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
 
 **Section sources**
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [util/store.js](file://src/util/store.js)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
 
-### QR/Barcode Scanning Module
-Purpose:
-- Capture QR/barcodes using device camera
-- Normalize and validate decoded values
-- Feed identifiers into downstream workflows
+### PIN Security System
+User workflow:
+- First-time setup: enroll and set a PIN.
+- Subsequent sessions: enter PIN to unlock sensitive actions.
+- Failed attempts trigger lockout or re-enrollment prompts.
 
-User interactions:
-- Start/stop scanning
-- Immediate visual/audio feedback on successful decode
-- Manual fallback entry if needed
+Business logic:
+- Securely store PIN hash locally.
+- Enforce minimum length and complexity rules.
+- Limit failed attempts and provide feedback.
 
-Data flow:
-- Scanner component reads frames and decodes codes
-- Decoded value emitted to owning view
-- View normalizes input and proceeds to lookup or add to list
+Technical implementation:
+- PIN pad component captures input.
+- Store tracks PIN status and attempt counters.
+- Dialogs inform users about errors and next steps.
 
-Error handling:
-- Camera permission denied
-- No code detected
-- Invalid format handling
+```mermaid
+stateDiagram-v2
+[*] --> Locked
+Locked --> Setup : "Enroll PIN"
+Locked --> Unlocked : "Enter correct PIN"
+Setup --> Locked : "Cancel"
+Setup --> Unlocked : "PIN saved"
+Unlocked --> Locked : "Lock after timeout"
+Locked --> Locked : "Failed attempts"
+```
+
+**Diagram sources**
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [views/pinsetup/index.vue:1-200](file://src/views/pinsetup/index.vue#L1-L200)
+- [views/enroll/index.vue:1-200](file://src/views/enroll/index.vue#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+
+**Section sources**
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [views/pinsetup/index.vue:1-200](file://src/views/pinsetup/index.vue#L1-L200)
+- [views/enroll/index.vue:1-200](file://src/views/enroll/index.vue#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+
+### Offline Capabilities
+User workflow:
+- Continue scanning and creating receipts/deliveries without connectivity.
+- App queues operations locally.
+- When online, background sync pushes queued items.
+
+Business logic:
+- Idempotent operations to avoid duplicates.
+- Conflict resolution strategy for concurrent changes.
+- Retry policies with exponential backoff.
+
+Technical implementation:
+- Service Worker caches static assets and API responses where appropriate.
+- Store persists outbox entries to local storage.
+- Background sync triggers when connection is restored.
 
 ```mermaid
 flowchart TD
-Start(["Start Scan"]) --> CheckPerm["Check Camera Permission"]
-CheckPerm --> PermOK{"Permission Granted?"}
-PermOK --> |No| ShowErr["Show Error and Exit"]
-PermOK --> |Yes| Capture["Capture Frame"]
-Capture --> Decode["Decode Barcode/QR"]
-Decode --> Valid{"Valid Format?"}
-Valid --> |No| Retry["Prompt Retry or Manual Entry"]
-Valid --> |Yes| Emit["Emit Value to View"]
-Emit --> End(["Stop Scan"])
-ShowErr --> End
-Retry --> Capture
+Start(["Operation Requested"]) --> CheckConn["Check Connectivity"]
+CheckConn --> |Online| Send["Send to Backend"]
+Send --> Result{"Success?"}
+Result --> |Yes| Done(["Complete"])
+Result --> |No| Queue["Queue in Outbox"]
+CheckConn --> |Offline| Queue
+Queue --> Sync["Background Sync"]
+Sync --> Retry{"Retry Policy Exceeded?"}
+Retry --> |No| Send
+Retry --> |Yes| Alert["Alert User"]
+Alert --> Done
 ```
 
 **Diagram sources**
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
 
 **Section sources**
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [public/sw.js:1-200](file://public/sw.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
 
-### Inventory Management: Scanned Goods
-Purpose:
-- Track items added by scanning
-- Display scanned list with details
-- Support removal and bulk actions
-
-User interactions:
-- Add items via scanner or manual entry
-- Review scanned list
-- Remove duplicates or incorrect entries
-
-Data flow:
-- Scanned value enters local list in store
-- Optional enrichment via OData lookup
-- List persists until submission or reset
-
-Error handling:
-- Duplicate detection
-- Lookup failures handled gracefully
+### Integration Points Between Features
+- Barcode scanning feeds into goods receipt management.
+- Goods receipts are attached to deliveries during registration.
+- PIN security gates access to sensitive operations like submission.
+- Offline queue integrates across all write operations (receipts, deliveries).
+- Store acts as the central source of truth shared by all views.
 
 ```mermaid
-sequenceDiagram
-participant G as "goods_to_scan/index.vue"
-participant SC as "qrcode/scanner/index.vue"
-participant BS as "barcodeScanner.js"
-participant ST as "store.js"
-participant OD as "odata.js"
-G->>SC : "Open scanner"
-SC->>BS : "Start capture"
-BS-->>SC : "Decoded value"
-SC-->>G : "Emit value"
-G->>ST : "Add to scanned list"
-G->>OD : "Optional enrichment by ID"
-OD-->>G : "Item details"
-G-->>G : "Render updated list"
+graph TB
+Scan["Barcode Scanner"] --> GR["Goods Receipt"]
+GR --> DR["Delivery Registration"]
+PIN["PIN Security"] --> GR
+PIN --> DR
+GR --> Outbox["Outbox Queue"]
+DR --> Outbox
+Outbox --> Sync["Background Sync"]
+Sync --> Backend["Backend OData"]
 ```
 
 **Diagram sources**
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
 
 **Section sources**
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-### Purchase Order Processing
-Purpose:
-- Load and display purchase order items
-- Associate scanned goods with PO lines
-- Validate quantities and line matching
-
-User interactions:
-- Select or search PO
-- View PO lines and quantities
-- Confirm matches and adjust as needed
-
-Data flow:
-- Fetch PO header and lines via OData
-- Map scanned IDs to PO lines
-- Update local state for confirmation
-
-Error handling:
-- Network errors
-- Missing PO or lines
-- Quantity mismatches
-
-```mermaid
-sequenceDiagram
-participant PO as "po_items/index.vue"
-participant OD as "odata.js"
-participant ST as "store.js"
-participant GS as "goods_to_scan/index.vue"
-PO->>OD : "Load PO header and lines"
-OD-->>PO : "PO data"
-PO->>ST : "Persist PO context"
-GS->>ST : "Provide scanned items"
-PO->>PO : "Match scanned items to PO lines"
-PO-->>PO : "Show match results and discrepancies"
-```
-
-**Diagram sources**
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
-- [util/odata.js](file://src/util/odata.js)
-- [util/store.js](file://src/util/store.js)
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-
-**Section sources**
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
-- [util/odata.js](file://src/util/odata.js)
-- [util/store.js](file://src/util/store.js)
-
-### Goods Registration Workflows
-Purpose:
-- Register delivered goods into the system
-- Create receipt items and finalize delivery registration
-
-User interactions:
-- Choose delivery context
-- Confirm scanned goods
-- Submit receipt items
-
-Data flow:
-- Aggregate scanned goods
-- Build receipt payloads
-- Post to backend via OData
-- Persist confirmation and clear working lists
-
-Error handling:
-- Validation errors before submit
-- Server-side rejection with actionable messages
-- Retry mechanism for failed submissions
-
-```mermaid
-sequenceDiagram
-participant RD as "register_delivery/index.vue"
-participant RI as "receipt_item/index.vue"
-participant SG as "scanned_goods/index.vue"
-participant ST as "store.js"
-participant OD as "odata.js"
-SG->>ST : "Provide final scanned list"
-RD->>RI : "Prepare receipt items"
-RI->>OD : "Create receipt items"
-OD-->>RI : "Server response"
-RI->>OD : "Finalize delivery registration"
-OD-->>RD : "Confirmation"
-RD->>ST : "Clear working state"
-```
-
-**Diagram sources**
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
-- [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-**Section sources**
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
-- [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-### Outbox and Offline Handling
-Purpose:
-- Queue operations when offline or when server is unavailable
-- Retry and sync when connectivity is restored
-
-User interactions:
-- See queued items
-- Trigger manual retry
-- Clear successfully sent items
-
-Data flow:
-- Failed operations appended to outbox
-- Background or manual sync pushes items
-- Success removes from outbox
-
-Error handling:
-- Conflict resolution guidance
-- Clear status indicators per item
-
-```mermaid
-flowchart TD
-Op["Operation Attempt"] --> Net{"Network OK?"}
-Net --> |Yes| Send["Send to Server"]
-Net --> |No| Queue["Append to Outbox"]
-Send --> Resp{"Success?"}
-Resp --> |Yes| Done["Remove from Outbox"]
-Resp --> |No| Queue
-Queue --> Retry["Manual or Auto Retry"]
-Retry --> Send
-```
-
-**Diagram sources**
-- [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-**Section sources**
-- [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-### Configuration Options
-Purpose:
-- Configure connection endpoints, timeouts, and feature flags
-- Persist settings locally for reuse
-
-User interactions:
-- Edit settings in config view
-- Save and apply changes
-- Reset to defaults if needed
-
-Data flow:
-- Settings read/written via store
-- OData service uses configured endpoints
-
-Error handling:
-- Validate inputs before saving
-- Warn about incompatible combinations
-
-```mermaid
-sequenceDiagram
-participant CFG as "config/index.vue"
-participant ST as "store.js"
-participant OD as "odata.js"
-CFG->>ST : "Load current settings"
-CFG->>CFG : "User edits settings"
-CFG->>ST : "Save new settings"
-CFG->>OD : "Apply endpoints/timeouts"
-OD-->>CFG : "Acknowledge configuration"
-```
-
-**Diagram sources**
-- [views/config/index.vue](file://src/views/config/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-
-**Section sources**
-- [views/config/index.vue](file://src/views/config/index.vue)
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
 
 ## Dependency Analysis
-Component and module dependencies are organized around shared services and reusable UI components. Views depend on store and OData for data operations; scanning depends on the scanner utility; PIN flows depend on the PIN component and store.
+High-level dependencies:
+- Views depend on store, utilities, and reusable components.
+- Store depends on entities and persistence helpers.
+- OData client encapsulates HTTP interactions.
+- Service Worker provides offline caching and background tasks.
 
 ```mermaid
-graph LR
-PIN["pinenter/index.vue"] --> PM["PinMobile.vue"]
-PIN --> ST["store.js"]
-SETUP["pinsetup/index.vue"] --> PM
-SETUP --> ST
-GOODS["goods_to_scan/index.vue"] --> SCAN["qrcode/scanner/index.vue"]
-GOODS --> BS["barcodeScanner.js"]
-GOODS --> ST
-SGOODS["scanned_goods/index.vue"] --> ST
-REG["register_delivery/index.vue"] --> ST
-REG --> OD["odata.js"]
-RECEIPT["receipt_item/index.vue"] --> OD
-OUTBOX["outbox_item/index.vue"] --> ST
-OUTBOX --> OD
-PO["po_items/index.vue"] --> OD
-PO --> ST
-CFG["config/index.vue"] --> ST
-CFG --> OD
+graph TB
+Router["router/index.js"] --> Home["views/home/index.vue"]
+Router --> GoodsScan["views/goods_to_scan/index.vue"]
+Router --> ScannedGoods["views/scanned_goods/index.vue"]
+Router --> ReceiptItem["views/receipt_item/index.vue"]
+Router --> RegDeliv["views/register_delivery/index.vue"]
+Router --> OutboxItem["views/outbox_item/index.vue"]
+Router --> PinEnter["views/pinenter/index.vue"]
+Router --> PinSetup["views/pinsetup/index.vue"]
+Router --> Enroll["views/enroll/index.vue"]
+Router --> Config["views/config/index.vue"]
+GoodsScan --> Store["util/store.js"]
+GoodsScan --> Entities["util/entities.js"]
+GoodsScan --> OData["util/odata.js"]
+GoodsScan --> Scanner["util/barcodeScanner.js"]
+GoodsScan --> Dialog["components/dialog/useDialog.js"]
+GoodsScan --> PinPad["components/pinmobile/PinMobile.vue"]
+RegDeliv --> Store
+RegDeliv --> OData
+PinEnter --> Store
+PinSetup --> Store
+Enroll --> Store
+Store --> SW["util/serviceWorker/serviceWorker.js"]
 ```
 
 **Diagram sources**
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [views/goods_to_scan/index.vue](file://src/views/goods_to_scan/index.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [util/store.js](file://src/util/store.js)
-- [views/scanned_goods/index.vue](file://src/views/scanned_goods/index.vue)
-- [views/register_delivery/index.vue](file://src/views/register_delivery/index.vue)
-- [views/receipt_item/index.vue](file://src/views/receipt_item/index.vue)
-- [views/outbox_item/index.vue](file://src/views/outbox_item/index.vue)
-- [views/po_items/index.vue](file://src/views/po_items/index.vue)
-- [views/config/index.vue](file://src/views/config/index.vue)
-- [util/odata.js](file://src/util/odata.js)
+- [router/index.js:1-200](file://src/router/index.js#L1-L200)
+- [views/home/index.vue:1-200](file://src/views/home/index.vue#L1-L200)
+- [views/goods_to_scan/index.vue:1-200](file://src/views/goods_to_scan/index.vue#L1-L200)
+- [views/scanned_goods/index.vue:1-200](file://src/views/scanned_goods/index.vue#L1-L200)
+- [views/receipt_item/index.vue:1-200](file://src/views/receipt_item/index.vue#L1-L200)
+- [views/register_delivery/index.vue:1-200](file://src/views/register_delivery/index.vue#L1-L200)
+- [views/outbox_item/index.vue:1-200](file://src/views/outbox_item/index.vue#L1-L200)
+- [views/pinenter/index.vue:1-200](file://src/views/pinenter/index.vue#L1-L200)
+- [views/pinsetup/index.vue:1-200](file://src/views/pinsetup/index.vue#L1-L200)
+- [views/enroll/index.vue:1-200](file://src/views/enroll/index.vue#L1-L200)
+- [views/config/index.vue:1-200](file://src/views/config/index.vue#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
 
 **Section sources**
-- [util/store.js](file://src/util/store.js)
-- [util/odata.js](file://src/util/odata.js)
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [components/pinmobile/PinMobile.vue](file://src/components/pinmobile/PinMobile.vue)
-- [components/qrcode/scanner/index.vue](file://src/components/qrcode/scanner/index.vue)
+- [router/index.js:1-200](file://src/router/index.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/entities.js:1-200](file://src/util/entities.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
+- [components/pinmobile/PinMobile.vue:1-200](file://src/components/pinmobile/PinMobile.vue#L1-L200)
 
 ## Performance Considerations
-- Debounce rapid scans to avoid duplicate entries
-- Batch OData requests where possible
-- Use pagination for large PO or item lists
-- Keep scanned lists lightweight; offload heavy computations to background tasks
-- Cache frequently accessed reference data locally when appropriate
+- Minimize re-renders by keeping store state granular and avoiding unnecessary updates.
+- Debounce rapid barcode inputs to prevent duplicate processing.
+- Use pagination or lazy loading for large lists (e.g., scanned goods).
+- Cache frequently accessed read-only data via service worker where safe.
+- Implement retry with backoff for network failures to reduce server load.
 
 [No sources needed since this section provides general guidance]
 
 ## Troubleshooting Guide
 Common issues and resolutions:
-- Camera not available: Ensure permissions granted; fall back to manual entry
-- Invalid barcode format: Prompt user to verify label and rescan
-- Network errors: Check configuration endpoints; use outbox to retry later
-- PIN lockouts: Follow on-screen instructions to reset via setup flow
-- Stale data: Refresh lists and re-fetch from server
+- Barcode not detected:
+  - Verify camera permissions and lighting conditions.
+  - Ensure format matches expected patterns.
+  - Check scanner initialization logs.
+- Submission fails offline:
+  - Confirm outbox contains pending items.
+  - Wait for background sync or manually retry.
+- PIN lockouts:
+  - Follow re-enrollment flow after max attempts.
+  - Clear PIN cache only through authorized admin action.
+- UI unresponsive:
+  - Inspect store mutations for heavy operations.
+  - Break long-running tasks into smaller chunks.
+
+Operational checks:
+- Verify service worker registration and cache status.
+- Confirm OData endpoint reachability and credentials.
+- Review dialog messages for actionable hints.
 
 **Section sources**
-- [util/barcodeScanner.js](file://src/util/barcodeScanner.js)
-- [util/odata.js](file://src/util/odata.js)
-- [util/store.js](file://src/util/store.js)
-- [views/pinenter/index.vue](file://src/views/pinenter/index.vue)
-- [views/pinsetup/index.vue](file://src/views/pinsetup/index.vue)
+- [util/barcodeScanner.js:1-200](file://src/util/barcodeScanner.js#L1-L200)
+- [util/store.js:1-200](file://src/util/store.js#L1-L200)
+- [util/odata.js:1-200](file://src/util/odata.js#L1-L200)
+- [util/serviceWorker/serviceWorker.js:1-200](file://src/util/serviceWorker/serviceWorker.js#L1-L200)
+- [components/dialog/useDialog.js:1-200](file://src/components/dialog/useDialog.js#L1-L200)
 
 ## Conclusion
-The ahm-gr-scanner integrates PIN authentication, robust scanning, and end-to-end inventory workflows. Shared services centralize state and network operations, while modular views provide focused user experiences. Together, these features enable efficient goods registration, purchase order reconciliation, and reliable delivery processing with clear user feedback and resilient error handling.
+The AHM GR Scanner provides an integrated, offline-capable solution for warehouse goods receipt and delivery operations. Its modular design separates concerns across views, store, and utilities, enabling robust barcode scanning, secure PIN access, and reliable background synchronization. By following the documented workflows and leveraging the outlined error handling and validation strategies, operators can maintain high throughput and data integrity even in challenging environments.

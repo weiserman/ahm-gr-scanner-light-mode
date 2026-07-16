@@ -6,22 +6,42 @@ scope:
     - '**'
 ---
 
-### palette manifest
-- Definition：A delivery document listing expected items and counts for incoming pallets; the app pulls this from the server before scanning to verify physical goods against the expected list.
+### Goods Receipt
+- Definition：Warehouse process of receiving and verifying delivered goods against purchase orders, involving barcode scanning to match physical items with expected quantities and recording discrepancies or exceptions
+- Aliases：GR、goods receipt process、receiving process
 
-### outbox
-- Definition：Local persistent queue of scanned verification records stored on the device until the Sync Outbox action bulk-pushes them back to the server.
-- Aliases：outbox queue
+### Purchase Order
+- Definition：Official document from supplier specifying ordered items, quantities, and delivery details; serves as the primary reference document for goods receipt verification and matching scanned barcodes against expected inventory
+- Aliases：PO、purchase order number、PurchaseOrder
 
-### goods_to_scan
-- Definition：One of the three dashboard tiles; the screen where the camera barcode scanner compares scanned codes against the fetched palette manifest and enqueues matches into the outbox.
+### Active Delivery
+- Definition：Currently selected purchase order document loaded into the reactive store cache, containing header information and nested item list with received quantities and exception flags for the active goods receipt session
+- Aliases：active delivery document、current delivery、ActiveDelivery cache key
 
-### scanned_goods
-- Definition：One of the three dashboard tiles; the screen displaying pending outbox entries awaiting sync to the server.
+### Outbox
+- Definition：Local offline queue storing verified goods receipt transactions when network connectivity is unavailable, enabling batch synchronization with SAP backend once connection is restored
+- Aliases：outbox queue、offline outbox、sync outbox
 
-### register_delivery
-- Definition：One of the three dashboard tiles; the screen that triggers the API call to pull the latest palette item manifests into the local system.
+### Hardware Wedge Scanner
+- Definition：Physical barcode scanner device that emulates keyboard input, typing decoded barcode strings into a hidden input field followed by Enter key events, allowing seamless integration with web forms without custom SDKs
+- Aliases：wedge scanner、keyboard wedge、Zebra wedge scanner
 
-### broker
-- Definition：The local AHM-native HTTP proxy endpoint `/api/net/request` that wraps outgoing requests in a JSON envelope, handling CORS, authentication, and cookie persistence between the WebView and the SAP backend.
-- Aliases：local proxy broker、native proxy
+### Broker Proxy
+- Definition：Local AHM native proxy endpoint at `/api/net/request` that performs actual HTTP calls server-side to bypass browser CORS restrictions, returning normalized response objects to the web application
+- Aliases：native proxy、local broker、proxy broker
+
+### CSRF Token
+- Definition：Security token required by SAP Gateway for state-changing HTTP requests (POST/PATCH/PUT/DELETE), fetched via GET handshake and cached in memory with automatic refresh on 403 responses
+- Aliases：X-CSRF-Token、CSRF handshake、token lifecycle
+
+### Draft Pipeline
+- Definition：Three-step RAP (Rapid Application Programming) transaction flow for creating goods receipts: create draft header, append draft items, then activate to promote to active ledger entry
+- Aliases：RAP draft pipeline、draft creation flow、activate pipeline
+
+### Entry Unit
+- Definition：Unit of measure context (e.g., EA, PK, CT) required alongside quantity fields to satisfy SAP dependent-property constraints when submitting goods receipt transactions
+- Aliases：UOM、unit of measure、EntryUnit
+
+### Vendor ID
+- Definition：Carton EAN or vendor-specific barcode identifier used to match physical packages against expected items in the active delivery, distinct from the material code
+- Aliases：CartonEAN、vendor barcode、vendorId

@@ -1,0 +1,5 @@
+- Every public function begins with a JSDoc block describing parameters, return type, and side effects — used consistently across `odata.js`, `entities.js`, `store.js`, and all helper modules.
+- Console logging follows a `[TAG] message` convention (e.g. `[SAP ODATA]`, `[STORE ACTION]`, `[SW REGISTER]`, `[SAP ENTITY SERVICE]`) so log sources are instantly identifiable.
+- Error propagation wraps low-level failures in domain-typed messages via `throw new Error('SAP ... Failed: ${error.message}')` rather than re-throwing raw exceptions.
+- Module-scoped mutable state is kept private (e.g. `cachedCsrfToken`, `stableSessionCookies`) and exposed only through named `export` functions or objects, not via getters/setters.
+- Configuration reads flow exclusively through `store.config.*` rather than direct constants, keeping host/path/credentials centralized.

@@ -1,0 +1,1 @@
+Vue 3 production ESM bundle + Vue Router global IIFE + vue3-sfc-loader for runtime SFC compilation; QR scanning via html5-qrcode (global `__Html5QrcodeLibrary__`) and QR rendering via `qr-code-generator-lib.mjs` (`getMatrix`, `renderPath`).

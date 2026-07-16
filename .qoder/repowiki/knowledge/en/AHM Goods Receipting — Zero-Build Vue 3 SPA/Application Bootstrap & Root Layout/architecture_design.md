@@ -1,0 +1,7 @@
+Two parallel entry points exist:
+- `src/main.js` — standard Vite entry that creates the Vue app, installs the router from `./router/index.js`, imports `Main.vue` and global styles, then mounts to `#app`.
+- `src/main.sfc.js` — SFC-only bootstrap via `./util/sfcBootstrap.js`; it dynamically loads the same `createApp`/`Main`/`router` symbols, conditionally attaches the router, and injects `style.css` through the native CSS modules API (`with { type: 'css' }`) into `document.adoptedStyleSheets`.
+
+`src/Main.vue` is the single root component: its template renders only `<router-view>` inside a `.minimal-container` div, while its `<script setup>` owns cross-cutting lifecycle for the Zebra wedge scanner — on mount it programmatically creates an off-screen hidden `<input id="hardwareScanCatcher">`, listens for Enter keydown (barcode payload), dispatches a custom `zebra-hardware-scan-completed` event, navigates to `/receipt_item`, and periodically re-focuses the hidden input via `window.zebraFocusStabilizer`. It yields focus when the user types in visible form fields or when the webcam scanner overlay is open.
+
+`src/style.css` defines the application's design tokens (`--accent-color`, `--header-height`, etc.) and the shared mobile-first layout shell (`.app-layout`, `.app-header`, `.app-content`) plus global resets, focus rings, and scrollbar hiding. Dependency direction is one-way: both entries depend on this module; `Main.vue` depends on `./util/barcodeScanner.js` and `./util/store.js` but nothing here depends back on them.

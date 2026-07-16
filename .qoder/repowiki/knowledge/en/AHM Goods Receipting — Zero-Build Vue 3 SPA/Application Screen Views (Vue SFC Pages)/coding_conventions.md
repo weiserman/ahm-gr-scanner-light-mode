@@ -1,0 +1,5 @@
+- Each feature lives in its own folder under `src/views/<feature>/index.vue` with no sub-components co-located — all reusable UI is pulled from `../../components/*`.
+- Pages follow a consistent shell: a root `<div class="app-layout">` wrapping a `MenuTop` title bar and a `<main class="app-content content-workspace">` body.
+- State mutations go through the exported `storeActions` object from `../../util/store.js`; direct `store.` property writes are avoided except for read-only access (e.g. `store.appPin`, `store.cache.entityLists`).
+- Navigation uses `router.push('/path')` with string path names rather than `router.replace` or programmatic history manipulation.
+- Scoped CSS relies on CSS custom properties (`--accent-color`, `--surface-color`, `--border-color`, `--text-main`, `--text-muted`) instead of hard-coded colors, and uses `100dvh` / `aspect-ratio` / grid layouts for mobile-first tile dashboards.

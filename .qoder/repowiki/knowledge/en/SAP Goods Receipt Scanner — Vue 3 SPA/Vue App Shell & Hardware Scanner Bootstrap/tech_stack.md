@@ -1,1 +1,0 @@
-Vue 3 Composition API (`<script setup>`, `useRoute`/`useRouter`) with vue-router; global styles via plain CSS variables — no UI framework.

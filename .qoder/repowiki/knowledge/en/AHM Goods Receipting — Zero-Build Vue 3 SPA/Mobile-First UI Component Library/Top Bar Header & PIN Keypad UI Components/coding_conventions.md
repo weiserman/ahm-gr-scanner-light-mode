@@ -1,0 +1,3 @@
+- Components are written as single-file SFCs with `<script setup>` and scoped `<style>`, declaring inputs via `defineProps` and outputs via `defineEmits` rather than the Options API.
+- Global event listeners are registered in `onMounted` / torn down in `onBeforeUnmount` (or `onUnmounted`) to avoid leaks, and watchers like `watch(() => route.fullPath, closeMenu)` are used to react to router state changes.
+- User-facing strings are exposed as props with sensible defaults instead of being hardcoded inside the component template.

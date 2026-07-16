@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: components/dialog
+title: Global Dialog Override Layer (window.alert/confirm/prompt)
+scope:
+    - src/components/dialog/
+source_files: []
+depends_on: []
+related_to: []

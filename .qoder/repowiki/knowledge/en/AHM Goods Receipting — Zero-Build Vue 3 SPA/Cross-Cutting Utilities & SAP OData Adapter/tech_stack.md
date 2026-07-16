@@ -1,0 +1,1 @@
+Vue 3 reactivity (`reactive`, `ref`, `watch`) for state; `vue3-sfc-loader` plus in-browser JS rewriting to bootstrap `.vue` components without Vite; SAP S/4HANA OData v4 over a local AHM native proxy broker (`/api/net/request`) to avoid CORS; Service Worker API for offline/mock interception.

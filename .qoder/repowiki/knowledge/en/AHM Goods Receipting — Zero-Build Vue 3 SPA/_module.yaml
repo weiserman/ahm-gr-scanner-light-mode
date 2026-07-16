@@ -1,0 +1,20 @@
+schema_version: 1
+module_path: ""
+title: AHM Goods Receipting — Zero-Build Vue 3 SPA
+scope:
+    - README.md
+    - .gitignore
+    - package.json
+    - vite.config.js
+    - index.html
+    - error.html
+    - serve.sh
+    - aichunk
+    - index.sfc.html
+    - index.vite.html
+    - package-lock.json
+    - qr.png
+    - vite.config.js.000
+source_files: []
+depends_on: []
+related_to: []

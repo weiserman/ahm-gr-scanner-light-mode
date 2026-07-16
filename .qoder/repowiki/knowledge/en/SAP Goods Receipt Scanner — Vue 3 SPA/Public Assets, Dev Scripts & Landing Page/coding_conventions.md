@@ -1,4 +1,0 @@
-- Device-targeted scripts accept an optional `$1` DEVICE argument and fall back to iterating all connected devices when omitted.
-- ADB invocations are hard-coded to the WSL path `/mnt/c/usr/bin/adb.exe` rather than looked up from PATH.
-- File-change watchers implement a timestamp map (`declare -A ..._TIMESTAMPS`) keyed by the relative file path and compare `stat -c %Y` values to detect new/modified/deleted entries.
-- Post-sync reloads are signalled by broadcasting `com.example.app.ACTION_RELOAD_WEBVIEW` instead of reloading the WebView directly.

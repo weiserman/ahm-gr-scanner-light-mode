@@ -1,0 +1,3 @@
+- Shared mutable state is stored on a named key on `window` (`__VUE_CUSTOM_DIALOG_STATE__`) and lazily initialised once, so any caller — including code outside the Vue tree — mutates the same reactive instance.
+- Asynchronous dialog results are communicated via a single in-flight `resolvePromise` ref rather than event emitters or callbacks; each `openDialog` call stores its resolver before the component becomes visible.
+- The composable returns only the minimal reactive slice (`isOpen`, `type`, `message`, `promptValue`, `open`, `handleAction`) instead of exposing the raw state object.

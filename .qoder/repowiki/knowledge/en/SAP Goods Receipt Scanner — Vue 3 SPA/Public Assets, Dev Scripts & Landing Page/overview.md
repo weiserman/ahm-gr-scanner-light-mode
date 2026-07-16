@@ -1,1 +1,0 @@
-Service workers for offline caching and OData mocking, plus shell helpers that push assets to an Android WebView app and a GitHub Pages landing page that deep-links into the app.

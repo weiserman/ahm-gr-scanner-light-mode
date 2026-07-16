@@ -1,0 +1,2 @@
+- Every SW registers both `install` and `activate` listeners that call `self.skipWaiting()` and `self.clients.claim()` respectively, ensuring immediate takeover of existing tabs.
+- `fetch` handlers match routes by substring-checking `event.request.url.includes(...)` rather than parsing or using regexes.

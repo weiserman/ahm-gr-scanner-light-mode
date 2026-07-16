@@ -1,0 +1,1 @@
+Registers the production service worker for immediate client takeover and provides a mock SW that intercepts OData catalog requests to serve fake delivery payloads during development.

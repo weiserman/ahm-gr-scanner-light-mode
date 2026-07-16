@@ -1,0 +1,1 @@
+Bash utilities for launching, stopping, watching, and syncing a hybrid Android app's web assets to a device via ADB, plus a dev server that serves a zipped bundle with a live QR code.

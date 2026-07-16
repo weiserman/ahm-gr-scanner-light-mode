@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: app_entry_and_main
+title: Application Bootstrap & Root Layout
+scope:
+    - src/main.js
+    - src/main.sfc.js
+    - src/Main.vue
+    - src/style.css
+source_files: []
+depends_on: []
+related_to:
+    - path: util

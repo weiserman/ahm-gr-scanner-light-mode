@@ -1,0 +1,1 @@
+`npm start` — Vite dev server on 0.0.0.0:3000, auto-detects WSL host IP and prints a QR code linking to `http://<host>:3000/index.vite.html`; `npm run dist` — builds to `dist/` with the HTML renamed back to `index.html`; `./serve.sh` — serves the repo root on port 4321 with cache-control headers for quick offline testing.

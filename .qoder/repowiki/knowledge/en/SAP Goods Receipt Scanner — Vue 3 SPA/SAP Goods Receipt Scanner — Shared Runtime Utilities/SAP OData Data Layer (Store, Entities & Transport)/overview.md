@@ -1,1 +1,0 @@
-Vue reactive application store plus SAP S/4HANA OData transport and entity adapters that normalize purchase-order and goods-receipt documents for the scanner UI.

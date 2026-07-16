@@ -1,5 +1,0 @@
-- Each view is a single `<template>` + `<script setup>` SFC with no child sub-components beyond the shared `PinMobile` keypad; all logic lives inline in the view's script block.
-- UI state is local `ref`s (`errorMessage`, `firstPinEntry`, `scanStatus`, `isQrScannerOpen`) while persistent data comes exclusively from the global `store` / `storeActions` module rather than props or Vuex modules.
-- Navigation between steps uses `router.push('/setup'|'/enter'|'/home')` instead of programmatic history manipulation or event-based step dispatch.
-- Scoped styles follow a fixed visual pattern: a centered card with `max-width: 340px`, gradient background, `border-radius: 16px`, and a `@media (max-width: 380px)` breakpoint that tightens font sizes and padding.
-- The `PinMobile` component is always referenced via a template ref (`pinSetupRef` / `pinEntryRef`) and cleared programmatically through `ref.value.clearAll()` after each submission branch.

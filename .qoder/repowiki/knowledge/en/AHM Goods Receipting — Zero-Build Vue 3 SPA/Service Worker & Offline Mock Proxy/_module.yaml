@@ -1,0 +1,10 @@
+schema_version: 1
+module_path: public_assets
+title: Service Worker & Offline Mock Proxy
+scope:
+    - public/
+    - mock-sw.js
+source_files: []
+depends_on: []
+related_to:
+    - path: util

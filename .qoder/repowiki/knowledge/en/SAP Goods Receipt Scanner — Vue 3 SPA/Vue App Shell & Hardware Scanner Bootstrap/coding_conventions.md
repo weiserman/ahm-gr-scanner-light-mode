@@ -1,3 +1,0 @@
-- Cross-component side effects are attached to `window` (e.g. `window.zebraFocusStabilizer`, `window.dispatchEvent(new CustomEvent(...))`) rather than passed through props or provide/inject.
-- Hardware-scanner integration is kept outside the reactive tree by creating a detached DOM element at mount time and wiring listeners directly on it, then clearing it in `onUnmounted`.
-- Global theming is centralized in `:root` CSS custom properties and consumed everywhere via `var(--name)` instead of hard-coded color literals.

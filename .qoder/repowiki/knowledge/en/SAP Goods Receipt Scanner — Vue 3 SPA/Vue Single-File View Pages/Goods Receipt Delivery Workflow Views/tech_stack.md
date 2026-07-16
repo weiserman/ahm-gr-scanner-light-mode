@@ -1,1 +1,0 @@
-Vue 3 Composition API (`<script setup>`, `ref`, `computed`, `onMounted/onUnmounted`) with vue-router for navigation; no UI framework — styling uses scoped CSS custom properties (`--accent-color`, `--danger-rgb`, etc.) and inline SVG icons.

@@ -1,0 +1,1 @@
+Bootstraps the Vue 3 SPA, mounts the root layout with router-view, and wires up a hidden input to capture Zebra hardware barcode-wedge keystrokes across all routes.

@@ -1,0 +1,1 @@
+Root of a zero-build mobile-first Vue 3 single-page app that boots from index.vite.html, wires router and SAP OData transport, and ships via Vite to dist/ for Android hybrid or static hosting.
