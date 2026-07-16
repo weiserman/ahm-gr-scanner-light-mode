@@ -76,6 +76,14 @@
           </svg>
           Update Quantity
         </button>
+
+        <!--Back Navigation Button to return to Scanned Goods list-->
+        <button type="button" class="back-btn" @click="router.push('/scanned_goods')">
+          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Back to Scanned Goods
+        </button>
       </form>
     </main>
   </div>
@@ -216,6 +224,28 @@ const handleUpdate = () => {
 
 .update-submit-btn:active {
   opacity: 0.9;
+}
+
+.back-btn {
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease;
+}
+
+.back-btn:active {
+  background-color: var(--surface-alt, #eef1f4);
 }
 
 .btn-icon {
