@@ -66,24 +66,24 @@
           </div>
         </div>
 
-        <!--Update Quantity Submission Action Button Module-->
-        <button type="submit" class="update-submit-btn">
-          <!--Save Floppy Vector Disk Icon matching your design wireframe standard-->
-          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-            <polyline points="17 21 17 13 7 13 7 21"></polyline>
-            <polyline points="7 3 7 8 15 8"></polyline>
-          </svg>
-          Update Quantity
-        </button>
+        <!--Bottom Action Button Row: Back + Update side-by-side-->
+        <div class="form-actions-row">
+          <button type="button" class="action-btn-back" @click="router.push('/scanned_goods')">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Back
+          </button>
 
-        <!--Back Navigation Button to return to Scanned Goods list-->
-        <button type="button" class="back-btn" @click="router.push('/scanned_goods')">
-          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-          Back to Scanned Goods
-        </button>
+          <button type="submit" class="action-btn-save">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Update Quantity
+          </button>
+        </div>
       </form>
     </main>
   </div>
@@ -141,7 +141,7 @@ const handleUpdate = () => {
 }
 
 .content-workspace {
-  padding-top: 5.5rem !important;
+  padding-top: 0.75rem !important;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
   width: 100%;
@@ -153,7 +153,7 @@ const handleUpdate = () => {
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 0.85rem;
   margin: 0 auto;
 }
 
@@ -202,55 +202,54 @@ const handleUpdate = () => {
   border-color: var(--accent-color, #16a34a);
 }
 
-.update-submit-btn {
-  background-color: var(--accent-color); 
-  color: var(--text-main); 
-  border: none;
+/* Footer Action Buttons Layout — matches receipt_item pattern */
+.form-actions-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+/* Secondary Back Button */
+.action-btn-back {
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
   border-radius: 6px;
-  padding: 0.9rem;
-  font-size: 1rem;
-  font-weight: bold;
+  padding: 0.7rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.3rem;
   cursor: pointer;
-  width: 100%;
-  margin-top: 1rem;
-  box-sizing: border-box;
-  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
-  transition: opacity 0.1s ease;
 }
 
-.update-submit-btn:active {
-  opacity: 0.9;
+.action-btn-back:active {
+  background-color: var(--surface-alt, #eef1f4);
 }
 
-.back-btn {
-  background-color: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+/* Primary Save Action Button */
+.action-btn-save {
+  background-color: var(--accent-color);
+  color: var(--accent-contrast);
+  border: none;
   border-radius: 6px;
-  padding: 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  padding: 0.7rem 0;
+  font-size: 0.85rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
   cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  transition: background-color 0.15s ease;
+  box-shadow: var(--accent-shadow, 0 4px 12px rgba(22, 163, 74, 0.15));
 }
 
-.back-btn:active {
-  background-color: var(--surface-alt, #eef1f4);
-}
-
-.btn-icon {
-  display: inline-block;
-  flex-shrink: 0;
+.action-btn-save:active {
+  opacity: 0.9;
 }
 
 /* Error Fallback container styling */
